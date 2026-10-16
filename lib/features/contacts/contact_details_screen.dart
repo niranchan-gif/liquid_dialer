@@ -103,10 +103,10 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                           Container(
                             width: 108.0,
                             height: 108.0,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: const RadialGradient(
-                                colors: [Color(0x2E00E5FF), Colors.transparent],
+                              gradient: RadialGradient(
+                                colors: [Color(0x20FFFFFF), Colors.transparent],
                               ),
                             ),
                           ),
@@ -132,7 +132,7 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                     const SizedBox(height: 28.0),
 
                     // Numbers Section
-                    Align(
+                    const Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'PHONE NUMBERS',
@@ -147,9 +147,9 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                     const SizedBox(height: 10.0),
 
                     if (contact.phones.isEmpty)
-                      GlassPanel(
-                        padding: const EdgeInsets.all(20.0),
-                        child: const Center(
+                      const GlassPanel(
+                        padding: EdgeInsets.all(20.0),
+                        child: Center(
                           child: Text(
                             'No phone numbers registered for this contact.',
                             style: TextStyle(
@@ -164,10 +164,10 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                         return Container(
                           margin: const EdgeInsets.only(bottom: 12.0),
                           decoration: BoxDecoration(
-                            color: GlassColors.glassFillUltraLight,
+                            color: const Color(0xFF101010),
                             borderRadius: BorderRadius.circular(16.0),
                             border: Border.all(
-                              color: GlassColors.borderSubtle,
+                              color: const Color(0x1AFFFFFF),
                               width: 1.0,
                             ),
                           ),
@@ -175,6 +175,8 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(16.0),
+                              splashColor: const Color(0x18FFFFFF),
+                              highlightColor: const Color(0x0CFFFFFF),
                               onTap: () {
                                 widget.onSelectNumber(phone.number);
                                 Navigator.of(context).pop();
@@ -191,12 +193,15 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                                       height: 40.0,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: GlassColors.cyanAccent
-                                            .withValues(alpha: 0.12),
+                                        color: const Color(0xFF1B1B1B),
+                                        border: Border.all(
+                                          color: const Color(0x28FFFFFF),
+                                          width: 1.0,
+                                        ),
                                       ),
                                       child: const Icon(
                                         Icons.phone_rounded,
-                                        color: GlassColors.cyanAccent,
+                                        color: GlassColors.textPrimary,
                                         size: 20.0,
                                       ),
                                     ),
@@ -235,28 +240,27 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                                         borderRadius: BorderRadius.circular(
                                           12.0,
                                         ),
-                                        color: GlassColors.mintPrimary
-                                            .withValues(alpha: 0.15),
+                                        color: const Color(0xFF172B1E),
                                         border: Border.all(
-                                          color: GlassColors.mintPrimary
-                                              .withValues(alpha: 0.3),
+                                          color: const Color(0x444EBE88),
+                                          width: 1.0,
                                         ),
                                       ),
                                       child: const Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Icon(
-                                            Icons.dialpad_rounded,
+                                            Icons.call_rounded,
                                             size: 14.0,
-                                            color: GlassColors.mintLight,
+                                            color: Color(0xFF5CD898),
                                           ),
-                                          SizedBox(width: 4.0),
+                                          SizedBox(width: 5.0),
                                           Text(
-                                            'Dial',
+                                            'Call',
                                             style: TextStyle(
                                               fontSize: 12.0,
                                               fontWeight: FontWeight.w600,
-                                              color: GlassColors.mintLight,
+                                              color: Color(0xFF5CD898),
                                             ),
                                           ),
                                         ],
@@ -287,7 +291,7 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
         height: 88.0,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: GlassColors.borderLight, width: 2.0),
+          border: Border.all(color: const Color(0x35FFFFFF), width: 1.5),
           image: DecorationImage(
             image: MemoryImage(contact.thumbnail!),
             fit: BoxFit.cover,
@@ -301,15 +305,12 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
       height: 88.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            GlassColors.icyBlue.withValues(alpha: 0.3),
-            GlassColors.deepViolet.withValues(alpha: 0.2),
-          ],
+          colors: [Color(0xFF242424), Color(0xFF141414)],
         ),
-        border: Border.all(color: GlassColors.borderLight, width: 2.0),
+        border: Border.all(color: const Color(0x35FFFFFF), width: 1.5),
       ),
       child: Center(
         child: Text(
@@ -317,7 +318,7 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
           style: const TextStyle(
             fontSize: 30.0,
             fontWeight: FontWeight.w700,
-            color: GlassColors.cyanAccent,
+            color: GlassColors.textPrimary,
           ),
         ),
       ),

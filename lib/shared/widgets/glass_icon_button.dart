@@ -90,7 +90,7 @@ class _GlassIconButtonState extends State<GlassIconButton>
   Widget build(BuildContext context) {
     final effectiveColor =
         widget.iconColor ??
-        (_isPressed ? GlassColors.cyanAccent : GlassColors.textPrimary);
+        (_isPressed ? GlassColors.silverHighlight : GlassColors.textPrimary);
 
     final disableAnimations =
         MediaQuery.maybeDisableAnimationsOf(context) ?? false;
@@ -119,15 +119,11 @@ class _GlassIconButtonState extends State<GlassIconButton>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   boxShadow: widget.activeGlow || _isPressed
-                      ? [
+                      ? const [
                           BoxShadow(
-                            color: widget.activeGlow
-                                ? GlassColors.icyBlue.withValues(alpha: 0.3)
-                                : GlassColors.cyanAccent.withValues(
-                                    alpha: 0.25,
-                                  ),
+                            color: Color(0x35FFFFFF),
                             blurRadius: 14.0,
-                            spreadRadius: 1.0,
+                            spreadRadius: 0.8,
                           ),
                         ]
                       : GlassDecorations.subtleShadow,
@@ -149,7 +145,7 @@ class _GlassIconButtonState extends State<GlassIconButton>
                             : GlassDecorations.keyRestingGradient,
                         border: Border.all(
                           color: _isPressed
-                              ? GlassColors.cyanAccent.withValues(alpha: 0.6)
+                              ? const Color(0x55FFFFFF)
                               : GlassColors.borderLight,
                           width: 1.1,
                         ),

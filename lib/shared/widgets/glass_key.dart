@@ -207,7 +207,7 @@ class _GlassKeyState extends State<GlassKey> with TickerProviderStateMixin {
                           }
                           return CustomPaint(
                             size: Size(widget.size, widget.size),
-                            painter: _WaterDropRipplePainter(
+                            painter: WaterDropRipplePainter(
                               progress: _rippleController.value,
                               origin: _rippleOrigin,
                             ),
@@ -266,39 +266,65 @@ class _GlassKeyState extends State<GlassKey> with TickerProviderStateMixin {
   }
 }
 
-/// Custom painter for the organic liquid water-drop expanding ripple wave.
-class _WaterDropRipplePainter extends CustomPainter {
-  const _WaterDropRipplePainter({required this.progress, required this.origin});
+/// Custom painter for the organic liquid water-drop expanding ripple wave with surface tension ripples.
+class WaterDropRipplePainter extends CustomPainter {
+  const WaterDropRipplePainter({required this.progress, required this.origin});
 
   final double progress;
   final Offset origin;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final maxRadius = size.longestSide * 0.9;
-    final currentRadius = lerpDouble(
-      4.0,
-      maxRadius,
-      Curves.easeOutQuad.transform(progress),
-    )!;
-    final alpha = ((1.0 - progress) * 0.35).clamp(0.0, 1.0);
+    final maxRadius = size.longestSide * 0.95;
+    final curveProgress = Curves.easeOutCubic.transform(progress);
+    final currentRadius = lerpDouble(4.0, maxRadius, curveProgress)!;
+    final alpha = ((1.0 - progress) * 0.40).clamp(0.0, 1.0);
 
-    final paint = Paint()
+    // 1. Core expanding droplet glow
+    final fillPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          Color.fromRGBO(255, 255, 255, alpha * 0.8),
-          Color.fromRGBO(255, 255, 255, alpha * 0.2),
+          Color.fromRGBO(255, 255, 255, alpha * 0.75),
+          Color.fromRGBO(255, 255, 255, alpha * 0.25),
           const Color(0x00FFFFFF),
         ],
-        stops: const [0.0, 0.6, 1.0],
+        stops: const [0.0, 0.55, 1.0],
       ).createShader(Rect.fromCircle(center: origin, radius: currentRadius))
       ..style = PaintingStyle.fill;
 
-    canvas.drawCircle(origin, currentRadius, paint);
+    canvas.drawCircle(origin, currentRadius, fillPaint);
+
+    // 2. Primary water-drop meniscus crest ring (surface tension boundary)
+    if (currentRadius > 8.0) {
+      final ringPaint = Paint()
+        ..color = Color.fromRGBO(255, 255, 255, alpha * 0.60)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2;
+
+      canvas.drawCircle(origin, currentRadius, ringPaint);
+    }
+
+    // 3. Secondary trailing surface ripple (creates organic droplet echo)
+    if (progress > 0.15) {
+      final secondaryProgress = ((progress - 0.15) / 0.85).clamp(0.0, 1.0);
+      final secondaryRadius = lerpDouble(
+        2.0,
+        maxRadius * 0.65,
+        Curves.easeOutQuad.transform(secondaryProgress),
+      )!;
+      final secondaryAlpha = ((1.0 - secondaryProgress) * 0.30).clamp(0.0, 1.0);
+
+      final secondaryRingPaint = Paint()
+        ..color = Color.fromRGBO(255, 255, 255, secondaryAlpha)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0;
+
+      canvas.drawCircle(origin, secondaryRadius, secondaryRingPaint);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant _WaterDropRipplePainter oldDelegate) {
+  bool shouldRepaint(covariant WaterDropRipplePainter oldDelegate) {
     return oldDelegate.progress != progress || oldDelegate.origin != origin;
   }
 }

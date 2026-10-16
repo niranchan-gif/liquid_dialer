@@ -314,7 +314,13 @@ class _ContactsScreenState extends State<ContactsScreen> {
           if (showFavorites && index == 0) {
             return FavoriteContactsSection(
               favorites: _controller.favoriteContacts,
-              onContactTap: _openContactDetails,
+              onContactTap: (contact) {
+                if (contact.primaryPhone.isNotEmpty) {
+                  widget.onSelectNumber?.call(contact.primaryPhone);
+                } else {
+                  _openContactDetails(contact);
+                }
+              },
             );
           }
 
@@ -325,14 +331,13 @@ class _ContactsScreenState extends State<ContactsScreen> {
             key: Key('contactTile_${contact.id}'),
             contact: contact,
             onTap: () {
-              if (contact.phones.length == 1) {
-                // If single number, populate dialer directly
+              if (contact.primaryPhone.isNotEmpty) {
                 widget.onSelectNumber?.call(contact.primaryPhone);
               } else {
-                // Multiple or 0 numbers: open details to choose
                 _openContactDetails(contact);
               }
             },
+            onLongPress: () => _openContactDetails(contact),
             onToggleFavorite: () => _controller.toggleFavorite(contact),
           );
         },

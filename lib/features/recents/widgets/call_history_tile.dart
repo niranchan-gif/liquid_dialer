@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/glass_styles.dart';
 import '../models/call_history_item.dart';
 
-/// Translucent Liquid Glass call-log row item with call-type indicators.
+/// Translucent Liquid Glass call-log row item with call-type indicators and direct call action.
 class CallHistoryTile extends StatelessWidget {
   const CallHistoryTile({super.key, required this.item, required this.onTap});
 
@@ -18,16 +18,16 @@ class CallHistoryTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8.0),
       decoration: BoxDecoration(
-        color: GlassColors.glassFillUltraLight,
+        color: const Color(0xFF101010),
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: GlassColors.borderSubtle, width: 1.0),
+        border: Border.all(color: const Color(0x1AFFFFFF), width: 1.0),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16.0),
-          splashColor: GlassColors.cyanAccent.withValues(alpha: 0.08),
-          highlightColor: GlassColors.glassFillLight,
+          splashColor: const Color(0x18FFFFFF),
+          highlightColor: const Color(0x0CFFFFFF),
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -105,13 +105,51 @@ class CallHistoryTile extends StatelessWidget {
                   ),
                 ),
 
-                // Timestamp
-                Text(
-                  item.formattedTimestamp,
-                  style: const TextStyle(
-                    fontSize: 12.0,
-                    color: GlassColors.textMuted,
-                  ),
+                // Timestamp & Quick Call Action
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      item.formattedTimestamp,
+                      style: const TextStyle(
+                        fontSize: 12.0,
+                        color: GlassColors.textMuted,
+                      ),
+                    ),
+                    if (item.number.isNotEmpty) ...[
+                      const SizedBox(width: 10.0),
+                      Semantics(
+                        button: true,
+                        label: 'Call ${item.displayName}',
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            key: Key('callButton_${item.number}'),
+                            borderRadius: BorderRadius.circular(20.0),
+                            splashColor: const Color(0x30FFFFFF),
+                            onTap: onTap,
+                            child: Container(
+                              width: 36.0,
+                              height: 36.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0xFF1B1B1B),
+                                border: Border.all(
+                                  color: const Color(0x30FFFFFF),
+                                  width: 1.0,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.call_rounded,
+                                size: 18.0,
+                                color: GlassColors.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ],
             ),
@@ -124,9 +162,9 @@ class CallHistoryTile extends StatelessWidget {
   Color _getTypeColor(CallHistoryType type) {
     switch (type) {
       case CallHistoryType.incoming:
-        return GlassColors.cyanAccent;
+        return const Color(0xFF4EBE88);
       case CallHistoryType.outgoing:
-        return GlassColors.icyBlue;
+        return GlassColors.silverHighlight;
       case CallHistoryType.missed:
       case CallHistoryType.rejected:
       case CallHistoryType.blocked:

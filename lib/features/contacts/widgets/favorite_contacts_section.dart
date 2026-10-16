@@ -50,14 +50,18 @@ class FavoriteContactsSection extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
-                  color: GlassColors.glassFillLight,
+                  color: const Color(0xFF161616),
+                  border: Border.all(
+                    color: const Color(0x22FFFFFF),
+                    width: 1.0,
+                  ),
                 ),
                 child: Text(
                   '${favorites.length}',
                   style: const TextStyle(
                     fontSize: 11.0,
                     fontWeight: FontWeight.w600,
-                    color: GlassColors.cyanAccent,
+                    color: GlassColors.silverHighlight,
                   ),
                 ),
               ),
@@ -98,6 +102,8 @@ class _FavoriteTile extends StatelessWidget {
       key: Key('favoriteItem_${contact.id}'),
       onTap: onTap,
       borderRadius: BorderRadius.circular(16.0),
+      splashColor: const Color(0x18FFFFFF),
+      highlightColor: const Color(0x0CFFFFFF),
       child: Container(
         width: 72.0,
         padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
@@ -117,7 +123,7 @@ class _FavoriteTile extends StatelessWidget {
                     padding: const EdgeInsets.all(2.5),
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: GlassColors.surfaceDark,
+                      color: Color(0xFF141414),
                     ),
                     child: Container(
                       padding: const EdgeInsets.all(3.0),
@@ -174,13 +180,10 @@ class _FavoriteTile extends StatelessWidget {
       height: 50.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            GlassColors.cyanAccent.withValues(alpha: 0.3),
-            GlassColors.deepViolet.withValues(alpha: 0.25),
-          ],
+          colors: [Color(0xFF242424), Color(0xFF141414)],
         ),
         border: Border.all(color: const Color(0x80FFB800), width: 1.5),
       ),

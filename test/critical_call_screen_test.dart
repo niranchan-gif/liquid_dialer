@@ -13,8 +13,11 @@ import 'package:liquid_dialer/features/calls/models/call_state.dart';
 import 'package:liquid_dialer/features/calls/screens/active_call_screen.dart';
 import 'package:liquid_dialer/features/calls/screens/incoming_call_screen.dart';
 import 'package:liquid_dialer/features/calls/services/call_event_service.dart';
+import 'package:liquid_dialer/features/contacts/controllers/contacts_controller.dart';
 import 'package:liquid_dialer/features/contacts/models/contact_item.dart';
 import 'package:liquid_dialer/features/contacts/services/contacts_service.dart';
+import 'package:liquid_dialer/features/favorites/services/favorites_service.dart';
+import 'package:liquid_dialer/shared/widgets/glass_bottom_navigation.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -348,6 +351,90 @@ void main() {
           expect(find.byKey(const Key('keypad_1')), findsOneWidget);
 
           controller.dispose();
+        },
+      );
+
+      testWidgets(
+        '9. Tapping contact directly initiates cellular call and displays ActiveCallScreen without numpad redirection',
+        (tester) async {
+          final controller = CallController(
+            bridge: mockBridge,
+            eventService: mockEventService,
+            contactsService: mockContactsService,
+            permissionsService: mockPermissionsService,
+          );
+          controller.setContactsCache(testContacts);
+
+          final contactsController = ContactsController(
+            permissionsService: mockPermissionsService,
+            contactsService: mockContactsService,
+            favoritesService: InMemoryFavoritesService(),
+          );
+          await contactsController.loadContacts();
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: MainShellScreen(
+                initialIndex: 2, // Contacts tab
+                callController: controller,
+                contactsController: contactsController,
+              ),
+            ),
+          );
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 300));
+
+          // Ensure contacts screen is displayed
+          expect(find.text('Niranchan'), findsOneWidget);
+
+          // Tap contact tile directly
+          await tester.tap(find.byKey(const Key('contactTile_c1')));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 300));
+
+          // Verify ActiveCallScreen is immediately presented with contact name
+          expect(find.byType(ActiveCallScreen), findsOneWidget);
+          expect(find.text('Niranchan'), findsWidgets);
+          expect(find.text('Calling...'), findsOneWidget);
+
+          controller.dispose();
+          contactsController.dispose();
+        },
+      );
+
+      testWidgets(
+        '10. GlassBottomNavigation sliding water-drop capsule updates smoothly on tab selection',
+        (tester) async {
+          int selectedIndex = 1;
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(
+                bottomNavigationBar: StatefulBuilder(
+                  builder: (context, setState) {
+                    return GlassBottomNavigation(
+                      currentIndex: selectedIndex,
+                      onTap: (index) => setState(() => selectedIndex = index),
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // Initial tab is Keypad
+          expect(find.text('Keypad'), findsOneWidget);
+
+          // Tap Recents
+          await tester.tap(find.byKey(const Key('nav_recents')));
+          await tester.pumpAndSettle();
+          expect(selectedIndex, 0);
+
+          // Tap Contacts
+          await tester.tap(find.byKey(const Key('nav_contacts')));
+          await tester.pumpAndSettle();
+          expect(selectedIndex, 2);
         },
       );
     },

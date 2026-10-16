@@ -152,9 +152,11 @@ class _CallActionButton extends StatefulWidget {
 }
 
 class _CallActionButtonState extends State<_CallActionButton>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _controller;
+  late final AnimationController _rippleController;
   late final Animation<double> _scaleAnimation;
+  Offset _rippleOrigin = const Offset(40.0, 30.0);
   bool _isPressed = false;
 
   @override
@@ -169,17 +171,27 @@ class _CallActionButtonState extends State<_CallActionButton>
       begin: 1.0,
       end: 0.93,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
+    _rippleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    );
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _rippleController.dispose();
     super.dispose();
   }
 
   void _handleTapDown(TapDownDetails details) {
-    setState(() => _isPressed = true);
+    setState(() {
+      _isPressed = true;
+      _rippleOrigin = details.localPosition;
+    });
     _controller.forward();
+    _rippleController.forward(from: 0.0);
     HapticFeedback.lightImpact();
   }
 
@@ -197,6 +209,8 @@ class _CallActionButtonState extends State<_CallActionButton>
   @override
   Widget build(BuildContext context) {
     const cornerRadius = 24.0;
+    final buttonWidth = widget.size * 1.15;
+    final buttonHeight = widget.size * 0.92;
 
     return Semantics(
       button: true,
@@ -213,8 +227,8 @@ class _CallActionButtonState extends State<_CallActionButton>
             return Transform.scale(scale: _scaleAnimation.value, child: child);
           },
           child: Container(
-            width: widget.size * 1.15,
-            height: widget.size * 0.92,
+            width: buttonWidth,
+            height: buttonHeight,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(cornerRadius),
               boxShadow: _isPressed
@@ -233,47 +247,69 @@ class _CallActionButtonState extends State<_CallActionButton>
                     ]
                   : GlassDecorations.callButtonGlow,
             ),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(cornerRadius),
-                gradient: _isPressed
-                    ? GlassDecorations.callButtonPressedGradient
-                    : GlassDecorations.callButtonGradient,
-                border: Border.all(
-                  color: _isPressed
-                      ? const Color(0x60FFFFFF)
-                      : const Color(0x30FFFFFF),
-                  width: 1.2,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(cornerRadius),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(cornerRadius),
+                  gradient: _isPressed
+                      ? GlassDecorations.callButtonPressedGradient
+                      : GlassDecorations.callButtonGradient,
+                  border: Border.all(
+                    color: _isPressed
+                        ? const Color(0x60FFFFFF)
+                        : const Color(0x30FFFFFF),
+                    width: 1.2,
+                  ),
                 ),
-              ),
-              child: Stack(
-                children: [
-                  // Specular meniscus highlight at top edge
-                  Positioned(
-                    top: 0,
-                    left: 16,
-                    right: 16,
-                    height: 1.5,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.transparent,
-                            Color(0x60FFFFFF),
-                            Colors.transparent,
-                          ],
+                child: Stack(
+                  children: [
+                    // Specular meniscus highlight at top edge
+                    Positioned(
+                      top: 0,
+                      left: 16,
+                      right: 16,
+                      height: 1.5,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Color(0x60FFFFFF),
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const Center(
-                    child: Icon(
-                      Icons.phone_rounded,
-                      color: GlassColors.textPrimary,
-                      size: 28.0,
+
+                    // Fluid water droplet ripple wave
+                    AnimatedBuilder(
+                      animation: _rippleController,
+                      builder: (context, _) {
+                        if (_rippleController.value == 0.0 ||
+                            _rippleController.isCompleted) {
+                          return const SizedBox.shrink();
+                        }
+                        return CustomPaint(
+                          size: Size(buttonWidth, buttonHeight),
+                          painter: WaterDropRipplePainter(
+                            progress: _rippleController.value,
+                            origin: _rippleOrigin,
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ],
+
+                    const Center(
+                      child: Icon(
+                        Icons.phone_rounded,
+                        color: GlassColors.textPrimary,
+                        size: 28.0,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

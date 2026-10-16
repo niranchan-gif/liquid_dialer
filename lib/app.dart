@@ -9,8 +9,10 @@ import 'features/calls/call_controller.dart';
 import 'features/calls/screens/active_call_screen.dart';
 import 'features/calls/screens/incoming_call_screen.dart';
 import 'features/contacts/contacts_screen.dart';
+import 'features/contacts/controllers/contacts_controller.dart';
 import 'features/dialer/dialer_controller.dart';
 import 'features/dialer/dialer_screen.dart';
+import 'features/recents/controllers/recents_controller.dart';
 import 'features/recents/recents_screen.dart';
 import 'shared/widgets/glass_bottom_navigation.dart';
 
@@ -43,6 +45,8 @@ class MainShellScreen extends StatefulWidget {
     this.initialIndex = 1,
     this.callService,
     this.callController,
+    this.contactsController,
+    this.recentsController,
   });
 
   /// The tab initially displayed. Defaults to 1 (Keypad).
@@ -53,6 +57,12 @@ class MainShellScreen extends StatefulWidget {
 
   /// Optional call controller for test injection and state control.
   final CallController? callController;
+
+  /// Optional contacts controller for test injection.
+  final ContactsController? contactsController;
+
+  /// Optional recents controller for test injection.
+  final RecentsController? recentsController;
 
   @override
   State<MainShellScreen> createState() => _MainShellScreenState();
@@ -174,9 +184,9 @@ class _MainShellScreenState extends State<MainShellScreen> {
                 index: _currentIndex,
                 children: [
                   RecentsScreen(
+                    controller: widget.recentsController,
                     onSelectNumber: (number) {
-                      _dialerController.setNumber(number);
-                      _onTabSelected(1);
+                      _callController.placeCall(number);
                     },
                   ),
                   DialerScreen(
@@ -184,9 +194,9 @@ class _MainShellScreenState extends State<MainShellScreen> {
                     onNavigateToContacts: () => _onTabSelected(2),
                   ),
                   ContactsScreen(
+                    controller: widget.contactsController,
                     onSelectNumber: (number) {
-                      _dialerController.setNumber(number);
-                      _onTabSelected(1);
+                      _callController.placeCall(number);
                     },
                   ),
                 ],
