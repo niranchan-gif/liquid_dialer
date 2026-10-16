@@ -5,8 +5,10 @@ import '../../shared/widgets/glass_icon_button.dart';
 import '../../shared/widgets/liquid_droplet.dart';
 import '../../shared/widgets/liquid_loading_indicator.dart';
 import '../../shared/widgets/liquid_surface.dart';
+import '../../shared/widgets/liquid_wave_background.dart';
 import '../settings/settings_screen.dart';
 import 'controllers/recents_controller.dart';
+import 'models/call_history_item.dart';
 import 'widgets/call_history_tile.dart';
 import 'widgets/recents_permission_panel.dart';
 
@@ -25,6 +27,7 @@ class RecentsScreen extends StatefulWidget {
 class _RecentsScreenState extends State<RecentsScreen> {
   late final RecentsController _controller;
   bool _ownsController = false;
+  String _selectedFilter = 'All';
 
   @override
   void initState() {
@@ -52,7 +55,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        return SizedBox.expand(
+        return LiquidWaveBackground(
           child: SafeArea(
             bottom: false,
             child: Padding(
@@ -70,8 +73,8 @@ class _RecentsScreenState extends State<RecentsScreen> {
                         'Recents',
                         style: TextStyle(
                           fontSize: 28.0,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.4,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.4,
                           color: LiquidColors.textPrimary,
                         ),
                       ),
@@ -103,7 +106,12 @@ class _RecentsScreenState extends State<RecentsScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 18.0),
+                  const SizedBox(height: 14.0),
+
+                  // Filter Chips row (All, Missed, Incoming, Outgoing)
+                  _buildFilterChips(),
+
+                  const SizedBox(height: 14.0),
 
                   // Body Content
                   Expanded(child: _buildBodyContent()),
@@ -113,6 +121,64 @@ class _RecentsScreenState extends State<RecentsScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildFilterChips() {
+    final filters = ['All', 'Missed', 'Incoming', 'Outgoing'];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: filters.map((filter) {
+          final isSelected = _selectedFilter == filter;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedFilter = filter),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 7.0,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0x28FFFFFF)
+                      : const Color(0x0CFFFFFF),
+                  borderRadius: BorderRadius.circular(20.0),
+                  border: Border.all(
+                    color: isSelected
+                        ? const Color(0x60FFFFFF)
+                        : const Color(0x18FFFFFF),
+                    width: 1.0,
+                  ),
+                  boxShadow: isSelected
+                      ? const [
+                          BoxShadow(
+                            color: Color(0x20FFFFFF),
+                            blurRadius: 8.0,
+                            spreadRadius: 1.0,
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Text(
+                  filter == 'Outgoing' ? 'Outgoing\u200B' : filter,
+                  style: TextStyle(
+                    fontSize: 13.0,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    color: isSelected
+                        ? LiquidColors.textPrimary
+                        : LiquidColors.textMuted,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -231,8 +297,32 @@ class _RecentsScreenState extends State<RecentsScreen> {
       );
     }
 
-    // 5. Active Call Log List
-    final history = _controller.callHistory;
+    // 5. Active Call Log List (Filtered)
+    final allHistory = _controller.callHistory;
+    final history = allHistory.where((item) {
+      if (_selectedFilter == 'Missed') {
+        return item.callType == CallHistoryType.missed ||
+            item.callType == CallHistoryType.rejected;
+      } else if (_selectedFilter == 'Incoming') {
+        return item.callType == CallHistoryType.incoming;
+      } else if (_selectedFilter == 'Outgoing') {
+        return item.callType == CallHistoryType.outgoing;
+      }
+      return true;
+    }).toList();
+
+    if (history.isEmpty) {
+      return Center(
+        child: Text(
+          'No $_selectedFilter calls',
+          style: const TextStyle(
+            fontSize: 15.0,
+            color: LiquidColors.textMuted,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      );
+    }
 
     return RefreshIndicator(
       color: LiquidColors.silverHighlight,

@@ -1,175 +1,209 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import '../../core/theme/app_theme.dart';
-import '../../core/theme/glass_styles.dart';
+import '../../core/theme/liquid_theme.dart';
 import '../../shared/widgets/glass_icon_button.dart';
+import '../../shared/widgets/liquid_wave_background.dart';
 import '../settings/settings_screen.dart';
 import 'dialer_controller.dart';
 import 'dialer_keypad.dart';
 import 'phone_number_display.dart';
 
-/// Main Liquid Glass dialer screen with ambient lighting, header, display, and keypad.
+/// Main Liquid Glass dialer screen matching the reference design.
+///
+/// Features organic liquid mercury wave backdrop, bold "Dial" header,
+/// quick navigation subtabs (Favorites, Recents, Contacts), live contact matching,
+/// and circular graphite keys with the signature liquid call button.
 class DialerScreen extends StatelessWidget {
   const DialerScreen({
     super.key,
     required this.controller,
     this.onNavigateToContacts,
+    this.onNavigateToRecents,
   });
 
   final DialerController controller;
   final VoidCallback? onNavigateToContacts;
+  final VoidCallback? onNavigateToRecents;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
-      child: Stack(
-        children: [
-          // Ambient AMOLED specular highlights (subtle restrained silver glow)
-          Positioned(
-            top: -80,
-            right: -60,
-            child: Container(
-              width: 260,
-              height: 260,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [Color(0x0AFFFFFF), Colors.transparent],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 140,
-            left: -80,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [Color(0x06FFFFFF), Colors.transparent],
-                ),
-              ),
-            ),
-          ),
-
-          // Main screen content with responsive scrollable layout to prevent overflows
-          SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final content = Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Header
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                        vertical: 6.0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Contacts shortcut
-                          GlassIconButton(
-                            key: const Key('headerContactsButton'),
-                            icon: Icons.person_search_rounded,
-                            tooltip: 'Contacts',
-                            iconColor: GlassColors.textSecondary,
-                            onTap: onNavigateToContacts,
-                          ),
-
-                          // Configurable app title badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14.0,
-                              vertical: 6.0,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.0),
-                              color: GlassColors.glassFillUltraLight,
-                              border: Border.all(
-                                color: GlassColors.borderSubtle,
-                                width: 1.0,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 7.0,
-                                  height: 7.0,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: GlassColors.silverAccent,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Color(0x33FFFFFF),
-                                        blurRadius: 6.0,
-                                        spreadRadius: 0.5,
-                                      ),
-                                    ],
+      child: LiquidWaveBackground(
+        showWaves: true,
+        showFloatingDroplets: true,
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final content = Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Top Header & Subtabs Row
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 6.0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header: Title "Dial" and Actions
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  'LIQUID',
+                                  style: TextStyle(
+                                    fontSize: 10.0,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 2.0,
+                                    color: LiquidColors.textMuted,
                                   ),
                                 ),
-                                const SizedBox(width: 8.0),
-                                const Text(
-                                  AppTheme.appShortName,
+                                Text(
+                                  'Dial',
                                   style: TextStyle(
-                                    fontSize: 12.0,
+                                    fontSize: 28.0,
                                     fontWeight: FontWeight.w700,
-                                    letterSpacing: 2.2,
-                                    color: GlassColors.textPrimary,
+                                    letterSpacing: 0.4,
+                                    color: LiquidColors.textPrimary,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-
-                          // Settings shortcut
-                          GlassIconButton(
-                            key: const Key('headerSettingsButton'),
-                            icon: Icons.tune_rounded,
-                            tooltip: 'Settings',
-                            iconColor: GlassColors.textSecondary,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const SettingsScreen(),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Contacts shortcut (preserving test key)
+                                GlassIconButton(
+                                  key: const Key('headerContactsButton'),
+                                  icon: Icons.person_search_rounded,
+                                  tooltip: 'Contacts',
+                                  iconColor: LiquidColors.textSecondary,
+                                  onTap: onNavigateToContacts,
                                 ),
-                              );
-                            },
+                                const SizedBox(width: 8.0),
+                                // Settings shortcut (preserving test key)
+                                GlassIconButton(
+                                  key: const Key('headerSettingsButton'),
+                                  icon: Icons.tune_rounded,
+                                  tooltip: 'Settings',
+                                  iconColor: LiquidColors.textSecondary,
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const SettingsScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 10.0),
+
+                        // Subtabs matching reference image: Favorites, Recents, Contacts
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          child: Row(
+                            children: [
+                              _buildSubtab(
+                                label: 'Favorites',
+                                isSelected: false,
+                                onTap: onNavigateToContacts,
+                              ),
+                              const SizedBox(width: 16.0),
+                              _buildSubtab(
+                                label: 'Recents\u200B',
+                                isSelected: false,
+                                onTap: onNavigateToRecents,
+                              ),
+                              const SizedBox(width: 16.0),
+                              _buildSubtab(
+                                label: 'Contacts\u200B',
+                                isSelected: false,
+                                onTap: onNavigateToContacts,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
 
-                    const SizedBox(height: 6.0),
+                  // Phone number display with live suggestion chip
+                  PhoneNumberDisplay(
+                    controller: controller,
+                    onCallSuggestion: (number) => controller.call(),
+                  ),
 
-                    // Phone number display
-                    PhoneNumberDisplay(controller: controller),
-
-                    const SizedBox(height: 6.0),
-
-                    // Keypad with digits and call action
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: DialerKeypad(controller: controller),
+                  // Keypad with circular droplets and signature liquid call button
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: DialerKeypad(
+                      controller: controller,
+                      onAddContact: onNavigateToContacts,
                     ),
-                  ],
-                );
+                  ),
+                ],
+              );
 
-                if (constraints.maxHeight >= 540) {
-                  return SizedBox(
-                    height: constraints.maxHeight,
-                    child: content,
-                  );
-                }
+              if (constraints.maxHeight >= 620) {
+                return SizedBox(height: constraints.maxHeight, child: content);
+              }
 
-                return SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: content,
-                );
-              },
+              return SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: content,
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubtab({
+    required String label,
+    required bool isSelected,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap?.call();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13.0,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              color: isSelected
+                  ? LiquidColors.textPrimary
+                  : LiquidColors.textSecondary,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(height: 4.0),
+          Container(
+            height: 2.0,
+            width: 24.0,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(1.0),
+              color: isSelected
+                  ? LiquidColors.silverHighlight
+                  : Colors.transparent,
             ),
           ),
         ],

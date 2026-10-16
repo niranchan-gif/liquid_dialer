@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/liquid_theme.dart';
-import '../../shared/widgets/glass_icon_button.dart';
+import '../../shared/widgets/liquid_droplet.dart';
 import '../../shared/widgets/liquid_surface.dart';
 import '../contacts/utils/phone_number_matcher.dart';
 import 'dialer_controller.dart';
 
 /// Premium AMOLED phone-number display with live contact matching,
 /// pure water-droplet suggestion chips, centered typography, and dedicated backspace control.
+///
+/// Exactly matches the reference design:
+/// - Floating contact match chip with avatar, name, number, and 'x' clear button.
+/// - Crisp, centered soft white phone number digits.
+/// - Direct-call suggestion list when multiple contacts match entered digits.
 class PhoneNumberDisplay extends StatelessWidget {
   const PhoneNumberDisplay({
     super.key,
     required this.controller,
     this.matchedContactName,
+    this.onCallSuggestion,
   });
 
   final DialerController controller;
-
-  /// Optional override/fallback contact matching name.
   final String? matchedContactName;
+  final ValueChanged<String>? onCallSuggestion;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +59,7 @@ class PhoneNumberDisplay extends StatelessWidget {
                   );
                 },
                 child: _buildContactInfo(
+                  context: context,
                   hasNumber: hasNumber,
                   primaryMatch: primaryMatch,
                   suggestionsCount: suggestions.length,
@@ -62,71 +69,37 @@ class PhoneNumberDisplay extends StatelessWidget {
               const SizedBox(height: 6.0),
 
               // Main number row with centered typography and dedicated backspace
-              Row(
-                children: [
-                  // Left spacer to ensure entered number remains precisely centered
-                  const SizedBox(width: 44.0),
-
-                  // Center phone number display
-                  Expanded(
-                    child: Center(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 150),
-                          child: Text(
-                            hasNumber ? formatted : 'Enter a number',
-                            key: ValueKey<String>(
-                              hasNumber ? formatted : 'placeholder',
-                            ),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 34.0,
-                              fontWeight: hasNumber
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                              letterSpacing: hasNumber ? 1.4 : 0.5,
-                              color: hasNumber
-                                  ? LiquidColors.textPrimary
-                                  : LiquidColors.textMuted.withValues(
-                                      alpha: 0.55,
-                                    ),
-                            ),
-                          ),
-                        ),
+              // Main number row with centered typography matching reference image
+              Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 150),
+                    child: Text(
+                      hasNumber ? formatted : 'Enter a number',
+                      key: ValueKey<String>(
+                        hasNumber ? formatted : 'placeholder',
+                      ),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 34.0,
+                        fontWeight: hasNumber
+                            ? FontWeight.w600
+                            : FontWeight.w400,
+                        letterSpacing: hasNumber ? 1.4 : 0.5,
+                        color: hasNumber
+                            ? LiquidColors.textPrimary
+                            : LiquidColors.textMuted.withValues(alpha: 0.55),
                       ),
                     ),
                   ),
-
-                  // Dedicated delete / backspace button
-                  SizedBox(
-                    width: 44.0,
-                    child: AnimatedOpacity(
-                      opacity: hasNumber ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 180),
-                      child: IgnorePointer(
-                        ignoring: !hasNumber,
-                        child: GlassIconButton(
-                          key: const Key('deleteButton'),
-                          icon: Icons.backspace_outlined,
-                          size: 42.0,
-                          iconSize: 20.0,
-                          iconColor: LiquidColors.textSecondary,
-                          tooltip: 'Delete',
-                          semanticLabel: 'Delete one digit, hold to clear all',
-                          onTap: () => controller.deleteDigit(),
-                          onLongPress: () => controller.clearNumber(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
 
-              // Multiple matching contacts suggestion chip strip
+              // Multiple matching contacts suggestion chip strip / dropdown
               if (hasNumber && suggestions.length > 1) ...[
-                const SizedBox(height: 6.0),
-                _buildSuggestionsStrip(suggestions),
+                const SizedBox(height: 8.0),
+                _buildSuggestionsDropdown(context, suggestions),
               ],
             ],
           ),
@@ -136,29 +109,41 @@ class PhoneNumberDisplay extends StatelessWidget {
   }
 
   Widget _buildContactInfo({
+    required BuildContext context,
     required bool hasNumber,
     required MatchedContact? primaryMatch,
     required int suggestionsCount,
   }) {
     if (!hasNumber) {
-      return const SizedBox(height: 22.0);
+      return const SizedBox(height: 24.0);
     }
 
     if (primaryMatch != null) {
       return LiquidSurface(
         key: ValueKey<String>('match_${primaryMatch.contact.id}'),
         level: LiquidSurfaceLevel.card,
-        borderRadius: BorderRadius.circular(16.0),
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+        borderRadius: BorderRadius.circular(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.person_rounded,
-              size: 15.0,
-              color: LiquidColors.silverHighlight.withValues(alpha: 0.85),
+            // Avatar
+            LiquidDroplet(
+              size: 26.0,
+              child: Center(
+                child: Text(
+                  primaryMatch.contact.initials,
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    color: LiquidColors.textPrimary,
+                  ),
+                ),
+              ),
             ),
-            const SizedBox(width: 6.0),
+            const SizedBox(width: 8.0),
+
+            // Name
             Flexible(
               child: Text(
                 primaryMatch.displayName,
@@ -173,6 +158,8 @@ class PhoneNumberDisplay extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8.0),
+
+            // Phone
             Text(
               primaryMatch.phoneNumber,
               style: const TextStyle(
@@ -181,6 +168,7 @@ class PhoneNumberDisplay extends StatelessWidget {
                 fontWeight: FontWeight.w400,
               ),
             ),
+
             if (suggestionsCount > 1) ...[
               const SizedBox(width: 6.0),
               Container(
@@ -206,6 +194,35 @@ class PhoneNumberDisplay extends StatelessWidget {
                 ),
               ),
             ],
+
+            const SizedBox(width: 4.0),
+
+            // Clear 'x' button
+            GestureDetector(
+              key: const Key('deleteButton'),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                controller.deleteDigit();
+              },
+              onLongPress: () {
+                HapticFeedback.mediumImpact();
+                controller.clearNumber();
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                width: 22.0,
+                height: 22.0,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: LiquidColors.surfaceElevated,
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  size: 13.0,
+                  color: LiquidColors.textSecondary,
+                ),
+              ),
+            ),
           ],
         ),
       );
@@ -215,7 +232,7 @@ class PhoneNumberDisplay extends StatelessWidget {
     final fallbackText = matchedContactName ?? 'Unknown number';
     return SizedBox(
       key: ValueKey<String>('fallback_$fallbackText'),
-      height: 22.0,
+      height: 24.0,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -236,71 +253,123 @@ class PhoneNumberDisplay extends StatelessWidget {
               letterSpacing: 0.3,
             ),
           ),
+          const SizedBox(width: 8.0),
+          GestureDetector(
+            key: const Key('deleteButton'),
+            onTap: () {
+              HapticFeedback.lightImpact();
+              controller.deleteDigit();
+            },
+            onLongPress: () {
+              HapticFeedback.mediumImpact();
+              controller.clearNumber();
+            },
+            behavior: HitTestBehavior.opaque,
+            child: const Icon(
+              Icons.backspace_outlined,
+              size: 14.0,
+              color: LiquidColors.textSecondary,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSuggestionsStrip(List<MatchedContact> suggestions) {
-    return SizedBox(
-      height: 26.0,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        physics: const BouncingScrollPhysics(),
-        itemCount: suggestions.length,
-        separatorBuilder: (_, index) => const SizedBox(width: 6.0),
-        itemBuilder: (context, index) {
-          final match = suggestions[index];
-          final isSelected = index == 0;
+  Widget _buildSuggestionsDropdown(
+    BuildContext context,
+    List<MatchedContact> suggestions,
+  ) {
+    // Renders up to 3 vertical suggestions with direct Call buttons matching CONTACT SUGGESTIONS screen
+    final displayed = suggestions.take(3).toList();
 
-          return GestureDetector(
+    return LiquidSurface(
+      level: LiquidSurfaceLevel.card,
+      borderRadius: BorderRadius.circular(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: displayed.map((match) {
+          return InkWell(
             onTap: () => controller.selectSuggestion(match),
-            child: Container(
+            borderRadius: BorderRadius.circular(12.0),
+            child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 8.0,
-                vertical: 3.0,
-              ),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? LiquidColors.surfaceElevated
-                    : LiquidColors.surfaceDark.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(12.0),
-                border: Border.all(
-                  color: isSelected
-                      ? LiquidColors.silverHighlight.withValues(alpha: 0.6)
-                      : LiquidColors.borderSubtle,
-                  width: 0.9,
-                ),
+                vertical: 6.0,
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    match.displayName,
-                    style: TextStyle(
-                      color: isSelected
-                          ? LiquidColors.textPrimary
-                          : LiquidColors.textSecondary,
-                      fontSize: 11.0,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w400,
+                  LiquidDroplet(
+                    size: 32.0,
+                    child: Center(
+                      child: Text(
+                        match.contact.initials,
+                        style: const TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w600,
+                          color: LiquidColors.textPrimary,
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 4.0),
-                  Text(
-                    match.phoneNumber,
-                    style: const TextStyle(
-                      color: LiquidColors.textMuted,
-                      fontSize: 10.0,
+                  const SizedBox(width: 10.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          match.displayName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: LiquidColors.textPrimary,
+                            fontSize: 13.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          match.phoneNumber,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: LiquidColors.textSecondary,
+                            fontSize: 11.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Direct call button on suggestion item
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      controller.selectSuggestion(match);
+                      controller.call();
+                    },
+                    child: Container(
+                      width: 32.0,
+                      height: 32.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF16251A),
+                        border: Border.all(
+                          color: const Color(0x4034D399),
+                          width: 1.0,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.phone_rounded,
+                        color: Color(0xFF4ADE80),
+                        size: 16.0,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }

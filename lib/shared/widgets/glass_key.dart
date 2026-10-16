@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../core/theme/glass_styles.dart';
+import '../../core/theme/liquid_theme.dart';
 
-/// Interactive liquid glass dialer key with organic squircle geometry,
-/// specular meniscus reflection, and tactile water-drop ripple motion.
+/// Interactive circular liquid dialer key with pure water-droplet geometry,
+/// top specular meniscus reflection, concentric ripple wave, and glowing touch aura.
 class GlassKey extends StatefulWidget {
   const GlassKey({
     super.key,
@@ -30,7 +30,7 @@ class GlassKey extends StatefulWidget {
   /// Optional long press callback (e.g., holding '0' to input '+').
   final VoidCallback? onLongPress;
 
-  /// Base dimension (width/height) of the squircle key.
+  /// Base dimension (width/height) of the circular key.
   final double size;
 
   /// Semantic description for accessibility.
@@ -52,10 +52,10 @@ class _GlassKeyState extends State<GlassKey> with TickerProviderStateMixin {
     super.initState();
     _scaleController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 90),
-      reverseDuration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 80),
+      reverseDuration: const Duration(milliseconds: 140),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.93).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic),
     );
 
@@ -108,8 +108,6 @@ class _GlassKeyState extends State<GlassKey> with TickerProviderStateMixin {
             ? '${widget.digit}, ${widget.letters}'
             : widget.digit);
 
-    const cornerRadius = 21.0;
-
     return Semantics(
       button: true,
       excludeSemantics: true,
@@ -129,67 +127,63 @@ class _GlassKeyState extends State<GlassKey> with TickerProviderStateMixin {
             width: widget.size,
             height: widget.size,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(cornerRadius),
+              shape: BoxShape.circle,
               boxShadow: _isPressed
-                  ? const [
-                      BoxShadow(
-                        color: Color(0x22FFFFFF),
-                        blurRadius: 14.0,
-                        spreadRadius: 0.5,
+                  ? [
+                      const BoxShadow(
+                        color: Color(0x55FFFFFF),
+                        blurRadius: 18.0,
+                        spreadRadius: 1.5,
                       ),
-                      BoxShadow(
-                        color: Color(0x77000000),
-                        blurRadius: 8.0,
+                      const BoxShadow(
+                        color: Color(0x90000000),
+                        blurRadius: 10.0,
                         offset: Offset(0, 3),
                       ),
                     ]
                   : const [
                       BoxShadow(
-                        color: Color(0x55000000),
+                        color: Color(0x60000000),
                         blurRadius: 8.0,
                         offset: Offset(0, 4),
                       ),
                     ],
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(cornerRadius),
+            child: ClipOval(
               child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: GlassDecorations.keyBlurSigma,
-                  sigmaY: GlassDecorations.keyBlurSigma,
-                ),
+                filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 120),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(cornerRadius),
+                    shape: BoxShape.circle,
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: _isPressed
-                          ? const [Color(0xFF262626), Color(0xFF141414)]
-                          : const [Color(0xFF191919), Color(0xFF0F0F0F)],
+                          ? const [Color(0xFF2C2C2C), Color(0xFF161616)]
+                          : const [Color(0xFF1E1E1E), Color(0xFF101010)],
                     ),
                     border: Border.all(
                       color: _isPressed
-                          ? const Color(0x50FFFFFF)
-                          : const Color(0x22FFFFFF),
+                          ? const Color(0x75FFFFFF)
+                          : const Color(0x28FFFFFF),
                       width: 1.0,
                     ),
                   ),
                   child: Stack(
                     children: [
-                      // Top liquid meniscus specular highlight
+                      // Top liquid meniscus specular reflection
                       Positioned(
                         top: 0,
-                        left: 12,
-                        right: 12,
+                        left: widget.size * 0.22,
+                        right: widget.size * 0.22,
                         height: 1.5,
                         child: Container(
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
                                 Colors.transparent,
-                                Color(0x40FFFFFF),
+                                Color(0x60FFFFFF),
                                 Colors.transparent,
                               ],
                             ),
@@ -227,26 +221,26 @@ class _GlassKeyState extends State<GlassKey> with TickerProviderStateMixin {
                                 fontSize:
                                     widget.digit == '*' || widget.digit == '#'
                                     ? 28.0
-                                    : 25.0,
-                                fontWeight: FontWeight.w500,
+                                    : 26.0,
+                                fontWeight: FontWeight.w600,
                                 color: _isPressed
                                     ? Colors.white
-                                    : GlassColors.textPrimary,
+                                    : LiquidColors.textPrimary,
                                 height: 1.0,
                               ),
                             ),
                             if (widget.letters != null &&
                                 widget.letters!.isNotEmpty) ...[
-                              const SizedBox(height: 3.5),
+                              const SizedBox(height: 3.0),
                               Text(
                                 widget.letters!,
                                 style: TextStyle(
-                                  fontSize: 9.5,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 1.5,
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1.2,
                                   color: _isPressed
-                                      ? GlassColors.silverHighlight
-                                      : GlassColors.textSecondary,
+                                      ? LiquidColors.silverHighlight
+                                      : LiquidColors.textSecondary,
                                   height: 1.0,
                                 ),
                               ),
@@ -266,7 +260,7 @@ class _GlassKeyState extends State<GlassKey> with TickerProviderStateMixin {
   }
 }
 
-/// Custom painter for the organic liquid water-drop expanding ripple wave with surface tension ripples.
+/// Dynamic dual-concentric water ripple wave painter representing droplet impact
 class WaterDropRipplePainter extends CustomPainter {
   const WaterDropRipplePainter({required this.progress, required this.origin});
 
@@ -275,51 +269,30 @@ class WaterDropRipplePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final maxRadius = size.longestSide * 0.95;
-    final curveProgress = Curves.easeOutCubic.transform(progress);
-    final currentRadius = lerpDouble(4.0, maxRadius, curveProgress)!;
-    final alpha = ((1.0 - progress) * 0.40).clamp(0.0, 1.0);
+    if (progress <= 0.0 || progress >= 1.0) return;
 
-    // 1. Core expanding droplet glow
-    final fillPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          Color.fromRGBO(255, 255, 255, alpha * 0.75),
-          Color.fromRGBO(255, 255, 255, alpha * 0.25),
-          const Color(0x00FFFFFF),
-        ],
-        stops: const [0.0, 0.55, 1.0],
-      ).createShader(Rect.fromCircle(center: origin, radius: currentRadius))
-      ..style = PaintingStyle.fill;
+    final maxRadius = size.longestSide * 0.75;
+    final primaryRadius = maxRadius * progress;
+    final secondaryRadius = primaryRadius * 0.70;
 
-    canvas.drawCircle(origin, currentRadius, fillPaint);
+    // Primary wave crest (specular reflection)
+    final primaryOpacity = (1.0 - progress).clamp(0.0, 1.0) * 0.35;
+    final primaryPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0 * (1.0 - progress)
+      ..color = Color.fromRGBO(255, 255, 255, primaryOpacity);
 
-    // 2. Primary water-drop meniscus crest ring (surface tension boundary)
-    if (currentRadius > 8.0) {
-      final ringPaint = Paint()
-        ..color = Color.fromRGBO(255, 255, 255, alpha * 0.60)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.2;
+    canvas.drawCircle(origin, primaryRadius, primaryPaint);
 
-      canvas.drawCircle(origin, currentRadius, ringPaint);
-    }
-
-    // 3. Secondary trailing surface ripple (creates organic droplet echo)
+    // Secondary concentric surface tension wave
     if (progress > 0.15) {
-      final secondaryProgress = ((progress - 0.15) / 0.85).clamp(0.0, 1.0);
-      final secondaryRadius = lerpDouble(
-        2.0,
-        maxRadius * 0.65,
-        Curves.easeOutQuad.transform(secondaryProgress),
-      )!;
-      final secondaryAlpha = ((1.0 - secondaryProgress) * 0.30).clamp(0.0, 1.0);
-
-      final secondaryRingPaint = Paint()
-        ..color = Color.fromRGBO(255, 255, 255, secondaryAlpha)
+      final secondaryOpacity = (1.0 - progress).clamp(0.0, 1.0) * 0.20;
+      final secondaryPaint = Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.0;
+        ..strokeWidth = 1.2 * (1.0 - progress)
+        ..color = Color.fromRGBO(255, 255, 255, secondaryOpacity);
 
-      canvas.drawCircle(origin, secondaryRadius, secondaryRingPaint);
+      canvas.drawCircle(origin, secondaryRadius, secondaryPaint);
     }
   }
 

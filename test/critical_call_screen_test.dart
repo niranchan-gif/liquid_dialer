@@ -347,7 +347,8 @@ void main() {
           );
           await tester.pumpAndSettle();
 
-          expect(tester.takeException(), isNull);
+          final err = tester.takeException();
+          expect(err, isNull);
           expect(find.byKey(const Key('keypad_1')), findsOneWidget);
 
           controller.dispose();

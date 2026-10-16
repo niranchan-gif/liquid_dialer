@@ -5,6 +5,7 @@ import '../../shared/widgets/glass_icon_button.dart';
 import '../../shared/widgets/liquid_droplet.dart';
 import '../../shared/widgets/liquid_loading_indicator.dart';
 import '../../shared/widgets/liquid_surface.dart';
+import '../../shared/widgets/liquid_wave_background.dart';
 import '../settings/settings_screen.dart';
 import 'contact_details_screen.dart';
 import 'controllers/contacts_controller.dart';
@@ -74,7 +75,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        return SizedBox.expand(
+        return LiquidWaveBackground(
           child: SafeArea(
             bottom: false,
             child: Padding(
@@ -92,8 +93,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
                         'Contacts',
                         style: TextStyle(
                           fontSize: 28.0,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.4,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.4,
                           color: LiquidColors.textPrimary,
                         ),
                       ),

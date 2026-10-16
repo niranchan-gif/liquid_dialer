@@ -120,13 +120,17 @@ class _CallStatusIndicatorState extends State<CallStatusIndicator>
                 ? dot
                 : FadeTransition(opacity: _pulseAnimation, child: dot),
             const SizedBox(width: 8.0),
-            Text(
-              _statusLabel,
-              style: TextStyle(
-                fontSize: 11.0,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-                color: color,
+            Flexible(
+              child: Text(
+                _statusLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11.0,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                  color: color,
+                ),
               ),
             ),
           ],

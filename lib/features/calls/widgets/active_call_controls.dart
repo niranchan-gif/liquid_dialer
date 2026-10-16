@@ -41,7 +41,7 @@ class ActiveCallControls extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // 2 rows of 3 glass buttons
+        // 2 rows of 3 glass buttons matching reference image
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -71,11 +71,13 @@ class ActiveCallControls extends StatelessWidget {
               },
             ),
 
-            // Speaker / Audio Route Button
+            // Speaker Button
             _ControlGridButton(
               key: const Key('activeCallAudioRouteButton'),
-              icon: _iconForRoute(audioState.currentRoute),
-              label: audioState.isSpeakerOn ? 'Speaker' : 'Audio',
+              icon: audioState.isSpeakerOn
+                  ? Icons.volume_up_rounded
+                  : Icons.volume_down_rounded,
+              label: 'Speaker',
               isActive: audioState.isSpeakerOn,
               activeColor: GlassColors.silverAccent,
               onTap: () {
@@ -87,7 +89,6 @@ class ActiveCallControls extends StatelessWidget {
                     onSelectRoute: onSelectAudioRoute,
                   );
                 } else {
-                  // Quick toggle between earpiece and speaker
                   final next = audioState.isSpeakerOn
                       ? AudioRoute.earpiece
                       : AudioRoute.speaker;
@@ -98,11 +99,21 @@ class ActiveCallControls extends StatelessWidget {
           ],
         ),
 
-        const SizedBox(height: 20.0),
+        const SizedBox(height: 22.0),
 
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            // Add Call Button
+            _ControlGridButton(
+              key: const Key('activeCallAddButton'),
+              icon: Icons.person_add_outlined,
+              label: 'Add call',
+              isActive: false,
+              isDisabled: true,
+              onTap: () {},
+            ),
+
             // Hold Button
             _ControlGridButton(
               key: const Key('activeCallHoldButton'),
@@ -116,22 +127,12 @@ class ActiveCallControls extends StatelessWidget {
               },
             ),
 
-            // Add Call Button (disabled indicator for single-party call)
-            _ControlGridButton(
-              key: const Key('activeCallAddButton'),
-              icon: Icons.add_call,
-              label: 'Add Call',
-              isActive: false,
-              isDisabled: true,
-              onTap: () {},
-            ),
-
-            // Audio Selector button (direct route sheet)
+            // Bluetooth Audio Selector button
             _ControlGridButton(
               key: const Key('activeCallRouteSheetButton'),
-              icon: Icons.speaker_group_rounded,
-              label: 'Outputs',
-              isActive: false,
+              icon: Icons.bluetooth_rounded,
+              label: 'Bluetooth',
+              isActive: audioState.currentRoute == AudioRoute.bluetooth,
               onTap: () {
                 HapticFeedback.lightImpact();
                 AudioRouteSelector.show(
@@ -176,19 +177,6 @@ class ActiveCallControls extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  IconData _iconForRoute(AudioRoute route) {
-    switch (route) {
-      case AudioRoute.speaker:
-        return Icons.volume_up_rounded;
-      case AudioRoute.bluetooth:
-        return Icons.bluetooth_audio_rounded;
-      case AudioRoute.wiredHeadset:
-        return Icons.headphones_rounded;
-      case AudioRoute.earpiece:
-        return Icons.phone_android_rounded;
-    }
   }
 }
 

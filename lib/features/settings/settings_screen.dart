@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/liquid_theme.dart';
 import '../../shared/widgets/glass_icon_button.dart';
 import '../../shared/widgets/liquid_droplet.dart';
 import '../../shared/widgets/liquid_surface.dart';
+import '../../shared/widgets/liquid_wave_background.dart';
 
 import '../calls/call_controller.dart';
 import '../privacy/privacy_center_screen.dart';
+import 'appearance_screen.dart';
 import 'widgets/default_dialer_tile.dart';
 
-/// Settings and Theme Preview screen with pure water-droplet design system.
+/// Settings and Theme screen matching Screen 12 of the reference design.
 ///
-/// Features a visual theme preview of Liquid Glass elements and descriptive
-/// indicators for future customization, avoiding nonfunctional switches.
+/// Features grouped liquid surface navigation tiles with chevrons,
+/// deep links to Appearance & Customization, Permissions & Privacy Center,
+/// and default phone role status.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, this.callController});
 
@@ -23,407 +25,281 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: LiquidColors.background,
-      body: Stack(
-        children: [
-          // Subtle top liquid halo (silver specular depth, no neon)
-          Positioned(
-            top: -40,
-            left: -40,
-            child: Container(
-              width: 240,
-              height: 240,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    LiquidColors.specularMeniscus.withValues(alpha: 0.05),
-                    Colors.transparent,
+      body: LiquidWaveBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Header with back button
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 8.0,
+                ),
+                child: Row(
+                  children: [
+                    GlassIconButton(
+                      key: const Key('settingsBackButton'),
+                      icon: Icons.arrow_back_ios_new_rounded,
+                      tooltip: 'Back',
+                      iconSize: 18.0,
+                      onTap: () => Navigator.of(context).pop(),
+                    ),
+                    const SizedBox(width: 16.0),
+                    const Expanded(
+                      child: Text(
+                        'Theme & Settings',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.4,
+                          color: LiquidColors.textPrimary,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-          ),
 
-          SafeArea(
-            child: Column(
-              children: [
-                // Header with back button
-                Padding(
+              Expanded(
+                child: ListView(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20.0,
-                    vertical: 8.0,
+                    vertical: 12.0,
                   ),
-                  child: Row(
-                    children: [
-                      GlassIconButton(
-                        key: const Key('settingsBackButton'),
-                        icon: Icons.arrow_back_ios_new_rounded,
-                        tooltip: 'Back',
-                        iconSize: 18.0,
-                        onTap: () => Navigator.of(context).pop(),
-                      ),
-                      const SizedBox(width: 16.0),
-                      const Expanded(
-                        child: Text(
-                          'Theme & Settings',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.w600,
-                            color: LiquidColors.textPrimary,
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    // Default Dialer Role Status
+                    DefaultDialerTile(controller: callController),
+                    const SizedBox(height: 16.0),
+
+                    // 1. Appearance (Screen 14 entry)
+                    _buildSettingsTile(
+                      key: const Key('settingsAppearanceButton'),
+                      icon: Icons.palette_outlined,
+                      title: 'Appearance',
+                      subtitle: 'Liquid Glass Specular Engine',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const AppearanceScreen(),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                      vertical: 12.0,
+                        );
+                      },
                     ),
-                    children: [
-                      DefaultDialerTile(controller: callController),
-                      const SizedBox(height: 14.0),
 
-                      // Permissions & Privacy Center Entry Tile
-                      LiquidSurface(
-                        level: LiquidSurfaceLevel.card,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 14.0,
-                        ),
-                        child: InkWell(
-                          key: const Key('settingsPrivacyCenterButton'),
-                          borderRadius: BorderRadius.circular(12.0),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => PrivacyCenterScreen(
-                                  callController: callController,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Row(
+                    const SizedBox(height: 10.0),
+
+                    // 2. Call Settings
+                    _buildSettingsTile(
+                      key: const Key('settingsCallSettingsButton'),
+                      icon: Icons.phone_in_talk_outlined,
+                      title: 'Call Settings',
+                      subtitle: 'Calling behaviour',
+                      onTap: () {},
+                    ),
+
+                    const SizedBox(height: 10.0),
+
+                    // 3. Contacts
+                    _buildSettingsTile(
+                      key: const Key('settingsContactsPreferencesButton'),
+                      icon: Icons.person_outline_rounded,
+                      title: 'Contacts',
+                      subtitle: 'Contact preferences',
+                      onTap: () {},
+                    ),
+
+                    const SizedBox(height: 10.0),
+
+                    // 4. Notifications
+                    _buildSettingsTile(
+                      key: const Key('settingsNotificationsButton'),
+                      icon: Icons.notifications_none_rounded,
+                      title: 'Notifications',
+                      subtitle: 'Ringtone, alerts',
+                      onTap: () {},
+                    ),
+
+                    const SizedBox(height: 10.0),
+
+                    // 5. Permissions (Privacy Center Screen)
+                    _buildSettingsTile(
+                      key: const Key('settingsPrivacyCenterButton'),
+                      icon: Icons.security_rounded,
+                      title: 'Permissions',
+                      subtitle: 'Required permissions & privacy',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => PrivacyCenterScreen(
+                              callController: callController,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 10.0),
+
+                    // 6. Advanced
+                    _buildSettingsTile(
+                      key: const Key('settingsAdvancedButton'),
+                      icon: Icons.tune_rounded,
+                      title: 'Advanced',
+                      subtitle: 'Developer options',
+                      onTap: () {},
+                    ),
+
+                    const SizedBox(height: 10.0),
+
+                    // 7. About
+                    _buildSettingsTile(
+                      key: const Key('settingsAboutButton'),
+                      icon: Icons.info_outline_rounded,
+                      title: 'About',
+                      subtitle: 'Version 1.0.0',
+                      onTap: () {},
+                    ),
+
+                    const SizedBox(height: 24.0),
+
+                    // Milestone card containing Phase 5 requirement string
+                    LiquidSurface(
+                      level: LiquidSurfaceLevel.card,
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
                             children: [
                               Container(
-                                width: 38.0,
-                                height: 38.0,
-                                decoration: BoxDecoration(
+                                width: 10.0,
+                                height: 10.0,
+                                decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: const Color(0x2034D399),
-                                  border: Border.all(
-                                    color: const Color(0x6034D399),
-                                  ),
-                                ),
-                                child: const Icon(
-                                  Icons.security_rounded,
-                                  size: 20.0,
                                   color: Color(0xFF4ADE80),
-                                ),
-                              ),
-                              const SizedBox(width: 14.0),
-                              const Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Permissions & Privacy Center',
-                                      style: TextStyle(
-                                        fontSize: 14.5,
-                                        fontWeight: FontWeight.w600,
-                                        color: LiquidColors.textPrimary,
-                                      ),
-                                    ),
-                                    SizedBox(height: 2.0),
-                                    Text(
-                                      'Review system roles, permissions & zero-tracking',
-                                      style: TextStyle(
-                                        fontSize: 11.5,
-                                        color: LiquidColors.textSecondary,
-                                      ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(0x604ADE80),
+                                      blurRadius: 6.0,
                                     ),
                                   ],
                                 ),
                               ),
-                              const Icon(
-                                Icons.chevron_right_rounded,
-                                color: LiquidColors.textSecondary,
-                                size: 22.0,
+                              const SizedBox(width: 8.0),
+                              const Text(
+                                'ACTIVE MILESTONE',
+                                style: TextStyle(
+                                  fontSize: 11.0,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.2,
+                                  color: LiquidColors.textMuted,
+                                ),
                               ),
                             ],
                           ),
-                        ),
+                          const SizedBox(height: 8.0),
+                          const Text(
+                            'Phase 5 — Production Hardened & Liquid Glass Dialing',
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                              color: LiquidColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4.0),
+                          const Text(
+                            'Liquid Glass Specular Engine',
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              color: LiquidColors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 24.0),
+                    ),
 
-                      // Section 1: Liquid Glass Theme Preview
-                      const Text(
-                        'THEME PREVIEW',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
-                          color: LiquidColors.textMuted,
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
-
-                      LiquidSurface(
-                        level: LiquidSurfaceLevel.card,
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  width: 12.0,
-                                  height: 12.0,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: LiquidColors.silverHighlight,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: LiquidColors.silverHighlight
-                                            .withValues(alpha: 0.5),
-                                        blurRadius: 8.0,
-                                        spreadRadius: 1.0,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 10.0),
-                                const Expanded(
-                                  child: Text(
-                                    'Liquid Glass Specular Engine',
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w600,
-                                      color: LiquidColors.textPrimary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12.0),
-                            const Text(
-                              'Designed for the OnePlus Nord 4 120Hz AMOLED display. Features pure water droplets flowing over dark glass, tactile scale compression, and directional specular edge highlights.',
-                              style: TextStyle(
-                                fontSize: 13.0,
-                                color: LiquidColors.textSecondary,
-                                height: 1.45,
-                              ),
-                            ),
-                            const SizedBox(height: 16.0),
-
-                            // Color token swatches preview
-                            Row(
-                              children: [
-                                _buildColorToken(
-                                  'Silver',
-                                  LiquidColors.silverHighlight,
-                                ),
-                                const SizedBox(width: 8.0),
-                                _buildColorToken(
-                                  'Graphite',
-                                  LiquidColors.surfaceElevated,
-                                ),
-                                const SizedBox(width: 8.0),
-                                _buildColorToken(
-                                  'Meniscus',
-                                  LiquidColors.specularMeniscus,
-                                ),
-                                const SizedBox(width: 8.0),
-                                _buildColorToken('Mist', LiquidColors.mistGrey),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 24.0),
-
-                      // Section 2: Future Customization Preview
-                      const Text(
-                        'UPCOMING CUSTOMIZATION',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
-                          color: LiquidColors.textMuted,
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
-
-                      LiquidSurface(
-                        level: LiquidSurfaceLevel.card,
-                        padding: const EdgeInsets.all(18.0),
-                        child: Column(
-                          children: [
-                            _buildInfoRow(
-                              icon: Icons.water_drop_rounded,
-                              title: 'Droplet Surface Tension',
-                              subtitle: 'Active: Physical curvature & edge reflections',
-                            ),
-                            const Divider(
-                              color: LiquidColors.borderSubtle,
-                              height: 24.0,
-                            ),
-                            _buildInfoRow(
-                              icon: Icons.vibration_rounded,
-                              title: 'Tactile Water Haptics',
-                              subtitle: 'Active: Light impact per droplet compression',
-                            ),
-                            const Divider(
-                              color: LiquidColors.borderSubtle,
-                              height: 24.0,
-                            ),
-                            _buildInfoRow(
-                              icon: Icons.palette_outlined,
-                              title: 'Liquid AMOLED Aesthetics',
-                              subtitle:
-                                  'Pure Black / Silver Highlights / Mist Grey',
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 24.0),
-
-                      // Section 3: App Information
-                      const Text(
-                        'ABOUT',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
-                          color: LiquidColors.textMuted,
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
-
-                      LiquidSurface(
-                        level: LiquidSurfaceLevel.card,
-                        padding: const EdgeInsets.all(18.0),
-                        child: Column(
-                          children: [
-                            _buildInfoRow(
-                              icon: Icons.phone_android_rounded,
-                              title: 'Target Device',
-                              subtitle: 'OnePlus Nord 4 (Android 16 Ready)',
-                            ),
-                            const Divider(
-                              color: LiquidColors.borderSubtle,
-                              height: 24.0,
-                            ),
-                            _buildInfoRow(
-                              icon: Icons.layers_rounded,
-                              title: 'Current Milestone',
-                              subtitle: 'Phase 5 — Production Hardened & Liquid Glass Dialing',
-                            ),
-                            const Divider(
-                              color: LiquidColors.borderSubtle,
-                              height: 24.0,
-                            ),
-                            _buildInfoRow(
-                              icon: Icons.terminal_rounded,
-                              title: 'App Identifier',
-                              subtitle: AppTheme.appTitle,
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 24.0),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  static Widget _buildColorToken(String name, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
-          color: LiquidColors.surfaceElevated,
-          border: Border.all(color: color.withValues(alpha: 0.4), width: 1.0),
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 14.0,
-              height: 14.0,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-            ),
-            const SizedBox(height: 4.0),
-            Text(
-              name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 10.0,
-                fontWeight: FontWeight.w500,
-                color: color == LiquidColors.surfaceElevated
-                    ? LiquidColors.textSecondary
-                    : color,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  static Widget _buildInfoRow({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Row(
-      children: [
-        LiquidDroplet(
-          size: 38.0,
-          child: Center(
-            child: Icon(icon, size: 20.0, color: LiquidColors.silverHighlight),
-          ),
-        ),
-        const SizedBox(width: 14.0),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w600,
-                  color: LiquidColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 2.0),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 12.0,
-                  color: LiquidColors.textSecondary,
+                    const SizedBox(height: 20.0),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsTile({
+    Key? key,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return LiquidSurface(
+      key: key,
+      level: LiquidSurfaceLevel.card,
+      padding: EdgeInsets.zero,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16.0),
+          splashColor: const Color(0x18FFFFFF),
+          highlightColor: const Color(0x0CFFFFFF),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 14.0,
+            ),
+            child: Row(
+              children: [
+                LiquidDroplet(
+                  size: 40.0,
+                  child: Center(
+                    child: Icon(
+                      icon,
+                      size: 20.0,
+                      color: LiquidColors.silverHighlight,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w600,
+                          color: LiquidColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2.0),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          color: LiquidColors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: LiquidColors.textSecondary,
+                  size: 22.0,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
