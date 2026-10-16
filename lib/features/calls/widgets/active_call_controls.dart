@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/glass_styles.dart';
+import '../../../core/theme/liquid_theme.dart';
+import '../../../shared/widgets/liquid_button.dart';
+import '../../../shared/widgets/liquid_loading_indicator.dart';
 import '../models/audio_route.dart';
 import 'audio_route_selector.dart';
+import 'liquid_call_control.dart';
 
 /// Interactive 6-button control matrix and prominent End Call button for active calls.
 class ActiveCallControls extends StatelessWidget {
@@ -147,56 +151,27 @@ class ActiveCallControls extends StatelessWidget {
           button: true,
           label: 'End call',
           enabled: !isEnding,
-          child: GestureDetector(
+          child: LiquidButton(
             key: const Key('activeCallEndButton'),
+            isCircle: true,
+            height: 72.0,
+            theme: LiquidButtonTheme.callRed,
             onTap: isEnding
                 ? null
                 : () {
                     HapticFeedback.heavyImpact();
                     onEndCall();
                   },
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              width: 72.0,
-              height: 72.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF381F1F), Color(0xFF241313)],
-                ),
-                border: Border.all(color: const Color(0x60F87171), width: 1.2),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x28EF4444),
-                    blurRadius: 20.0,
-                    spreadRadius: 1.5,
+            child: isEnding
+                ? const LiquidLoadingIndicator(
+                    size: 24.0,
+                    color: Color(0xFFF4F4F4),
+                  )
+                : const Icon(
+                    Icons.call_end_rounded,
+                    color: Color(0xFFF4F4F4),
+                    size: 30.0,
                   ),
-                  BoxShadow(
-                    color: Color(0x70000000),
-                    blurRadius: 12.0,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: isEnding
-                    ? const SizedBox(
-                        width: 26.0,
-                        height: 26.0,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.2,
-                          color: Color(0xFFF4F4F4),
-                        ),
-                      )
-                    : const Icon(
-                        Icons.call_end_rounded,
-                        color: Color(0xFFF4F4F4),
-                        size: 30.0,
-                      ),
-              ),
-            ),
           ),
         ),
       ],
@@ -224,7 +199,7 @@ class _ControlGridButton extends StatelessWidget {
     required this.label,
     required this.isActive,
     required this.onTap,
-    this.activeColor = GlassColors.silverAccent,
+    this.activeColor = LiquidColors.silverAccent,
     this.isDisabled = false,
   });
 
@@ -237,62 +212,13 @@ class _ControlGridButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
+    return LiquidCallControl(
+      icon: icon,
       label: label,
-      enabled: !isDisabled,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
-            onTap: isDisabled ? null : onTap,
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              width: 64.0,
-              height: 64.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isActive
-                    ? const Color(0xFF222222)
-                    : const Color(0xFF101010),
-                border: Border.all(
-                  color: isActive
-                      ? const Color(0x45FFFFFF)
-                      : GlassColors.borderSubtle,
-                  width: 1.2,
-                ),
-                boxShadow: isActive
-                    ? [
-                        BoxShadow(
-                          color: const Color(0x20FFFFFF),
-                          blurRadius: 16.0,
-                          spreadRadius: 1.0,
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Icon(
-                icon,
-                color: isDisabled
-                    ? GlassColors.textMuted.withValues(alpha: 0.5)
-                    : (isActive ? activeColor : GlassColors.textPrimary),
-                size: 26.0,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12.0,
-              fontWeight: FontWeight.w500,
-              color: isDisabled
-                  ? GlassColors.textMuted
-                  : GlassColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
+      isActive: isActive,
+      onTap: onTap,
+      activeColor: activeColor,
+      isDisabled: isDisabled,
     );
   }
 }

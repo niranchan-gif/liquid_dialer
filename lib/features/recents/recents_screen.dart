@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/glass_styles.dart';
+import '../../core/theme/liquid_theme.dart';
 import '../../shared/widgets/glass_icon_button.dart';
-import '../../shared/widgets/glass_panel.dart';
+import '../../shared/widgets/liquid_droplet.dart';
+import '../../shared/widgets/liquid_loading_indicator.dart';
+import '../../shared/widgets/liquid_surface.dart';
 import '../settings/settings_screen.dart';
 import 'controllers/recents_controller.dart';
 import 'widgets/call_history_tile.dart';
@@ -70,7 +72,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
                           fontSize: 28.0,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.4,
-                          color: GlassColors.textPrimary,
+                          color: LiquidColors.textPrimary,
                         ),
                       ),
                       Row(
@@ -118,10 +120,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
     // 1. Loading State
     if (_controller.isLoading && _controller.callHistory.isEmpty) {
       return const Center(
-        child: CircularProgressIndicator(
-          color: GlassColors.icyBlue,
-          strokeWidth: 2.5,
-        ),
+        child: LiquidLoadingIndicator(label: 'Loading call history...'),
       );
     }
 
@@ -137,7 +136,8 @@ class _RecentsScreenState extends State<RecentsScreen> {
     // 3. Error State
     if (_controller.errorMessage != null && _controller.callHistory.isEmpty) {
       return Center(
-        child: GlassPanel(
+        child: LiquidSurface(
+          level: LiquidSurfaceLevel.card,
           margin: const EdgeInsets.symmetric(horizontal: 12.0),
           padding: const EdgeInsets.all(24.0),
           child: Column(
@@ -146,7 +146,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
               const Icon(
                 Icons.error_outline_rounded,
                 size: 40.0,
-                color: GlassColors.danger,
+                color: LiquidColors.callRed,
               ),
               const SizedBox(height: 14.0),
               const Text(
@@ -154,7 +154,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
-                  color: GlassColors.textPrimary,
+                  color: LiquidColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8.0),
@@ -163,7 +163,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 13.0,
-                  color: GlassColors.textSecondary,
+                  color: LiquidColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 18.0),
@@ -173,8 +173,9 @@ class _RecentsScreenState extends State<RecentsScreen> {
                 icon: const Icon(Icons.refresh_rounded, size: 16.0),
                 label: const Text('Try Again'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: GlassColors.icyBlue,
+                  backgroundColor: LiquidColors.silverHighlight,
                   foregroundColor: Colors.black,
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
@@ -189,23 +190,21 @@ class _RecentsScreenState extends State<RecentsScreen> {
     // 4. Empty Call History State
     if (_controller.isEmpty) {
       return Center(
-        child: GlassPanel(
+        child: LiquidSurface(
+          level: LiquidSurfaceLevel.card,
           margin: const EdgeInsets.symmetric(horizontal: 12.0),
           padding: const EdgeInsets.all(28.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 60.0,
-                height: 60.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: GlassColors.icyBlue.withValues(alpha: 0.12),
-                ),
-                child: const Icon(
-                  Icons.history_toggle_off_rounded,
-                  size: 30.0,
-                  color: GlassColors.icyBlue,
+              LiquidDroplet(
+                size: 60.0,
+                child: const Center(
+                  child: Icon(
+                    Icons.history_toggle_off_rounded,
+                    size: 28.0,
+                    color: LiquidColors.silverHighlight,
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -214,7 +213,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
-                  color: GlassColors.textPrimary,
+                  color: LiquidColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8.0),
@@ -223,7 +222,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13.0,
-                  color: GlassColors.textSecondary,
+                  color: LiquidColors.textSecondary,
                 ),
               ),
             ],
@@ -236,8 +235,8 @@ class _RecentsScreenState extends State<RecentsScreen> {
     final history = _controller.callHistory;
 
     return RefreshIndicator(
-      color: GlassColors.icyBlue,
-      backgroundColor: GlassColors.surfaceDark,
+      color: LiquidColors.silverHighlight,
+      backgroundColor: LiquidColors.surfaceElevated,
       onRefresh: _controller.refresh,
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(

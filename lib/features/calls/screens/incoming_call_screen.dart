@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/glass_styles.dart';
-import '../call_controller.dart';
+import '../../../core/theme/liquid_theme.dart';
+import '../../calls/call_controller.dart';
 import '../models/call_session.dart';
 import '../models/call_state.dart';
 import '../widgets/call_status_indicator.dart';
@@ -60,7 +60,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen>
         MediaQuery.maybeDisableAnimationsOf(context) ?? false;
 
     return Scaffold(
-      backgroundColor: GlassColors.background,
+      backgroundColor: LiquidColors.background,
       body: Stack(
         children: [
           // Subtle restrained silver ambient glow in background
@@ -160,7 +160,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen>
                             fontSize: 44.0,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 1.0,
-                            color: GlassColors.textPrimary,
+                            color: LiquidColors.textPrimary,
                           ),
                         ),
                       ),
@@ -176,7 +176,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen>
                       fontSize: 30.0,
                       fontWeight: FontWeight.w600,
                       letterSpacing: -0.5,
-                      color: GlassColors.textPrimary,
+                      color: LiquidColors.textPrimary,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 2,
@@ -191,7 +191,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen>
                       style: const TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w400,
-                        color: GlassColors.textSecondary,
+                        color: LiquidColors.textSecondary,
                         letterSpacing: 0.6,
                       ),
                     ),

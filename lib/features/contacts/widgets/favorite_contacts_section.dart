@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/glass_styles.dart';
+import '../../../core/theme/liquid_theme.dart';
+import '../../../shared/widgets/liquid_droplet.dart';
 import '../models/contact_item.dart';
 
-/// Horizontal favorites carousel rendered at the top of the Contacts screen.
+/// Horizontal favorites carousel rendered at the top of the Contacts screen
+/// with pure liquid droplet styling.
 class FavoriteContactsSection extends StatelessWidget {
   const FavoriteContactsSection({
     super.key,
@@ -39,7 +41,7 @@ class FavoriteContactsSection extends StatelessWidget {
                   fontSize: 12.0,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.5,
-                  color: GlassColors.textSecondary,
+                  color: LiquidColors.textSecondary,
                 ),
               ),
               const SizedBox(width: 8.0),
@@ -50,9 +52,9 @@ class FavoriteContactsSection extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
-                  color: const Color(0xFF161616),
+                  color: LiquidColors.surfaceElevated,
                   border: Border.all(
-                    color: const Color(0x22FFFFFF),
+                    color: LiquidColors.specularMeniscus.withValues(alpha: 0.2),
                     width: 1.0,
                   ),
                 ),
@@ -61,7 +63,7 @@ class FavoriteContactsSection extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 11.0,
                     fontWeight: FontWeight.w600,
-                    color: GlassColors.silverHighlight,
+                    color: LiquidColors.silverHighlight,
                   ),
                 ),
               ),
@@ -113,7 +115,7 @@ class _FavoriteTile extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                // Avatar
+                // Avatar Droplet
                 _buildAvatar(),
                 // Star badge
                 Positioned(
@@ -150,7 +152,7 @@ class _FavoriteTile extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 11.0,
                 fontWeight: FontWeight.w500,
-                color: GlassColors.textPrimary,
+                color: LiquidColors.textPrimary,
               ),
             ),
           ],
@@ -175,25 +177,15 @@ class _FavoriteTile extends StatelessWidget {
       );
     }
 
-    return Container(
-      width: 50.0,
-      height: 50.0,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF242424), Color(0xFF141414)],
-        ),
-        border: Border.all(color: const Color(0x80FFB800), width: 1.5),
-      ),
+    return LiquidDroplet(
+      size: 50.0,
       child: Center(
         child: Text(
           contact.initials,
           style: const TextStyle(
             fontSize: 16.0,
             fontWeight: FontWeight.w700,
-            color: GlassColors.textPrimary,
+            color: LiquidColors.textPrimary,
           ),
         ),
       ),

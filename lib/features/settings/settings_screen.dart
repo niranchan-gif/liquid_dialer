@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
-import '../../core/theme/glass_styles.dart';
+import '../../core/theme/liquid_theme.dart';
 import '../../shared/widgets/glass_icon_button.dart';
-import '../../shared/widgets/glass_panel.dart';
+import '../../shared/widgets/liquid_droplet.dart';
+import '../../shared/widgets/liquid_surface.dart';
 
 import '../calls/call_controller.dart';
 import '../privacy/privacy_center_screen.dart';
 import 'widgets/default_dialer_tile.dart';
 
-/// Settings and Theme Preview screen.
+/// Settings and Theme Preview screen with pure water-droplet design system.
 ///
 /// Features a visual theme preview of Liquid Glass elements and descriptive
 /// indicators for future customization, avoiding nonfunctional switches.
@@ -21,20 +22,23 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GlassColors.background,
+      backgroundColor: LiquidColors.background,
       body: Stack(
         children: [
-          // Ambient background glow
+          // Subtle top liquid halo (silver specular depth, no neon)
           Positioned(
             top: -40,
             left: -40,
             child: Container(
               width: 240,
               height: 240,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1838BDF8), Colors.transparent],
+                  colors: [
+                    LiquidColors.specularMeniscus.withValues(alpha: 0.05),
+                    Colors.transparent,
+                  ],
                 ),
               ),
             ),
@@ -66,7 +70,7 @@ class SettingsScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 20.0,
                             fontWeight: FontWeight.w600,
-                            color: GlassColors.textPrimary,
+                            color: LiquidColors.textPrimary,
                           ),
                         ),
                       ),
@@ -85,7 +89,8 @@ class SettingsScreen extends StatelessWidget {
                       const SizedBox(height: 14.0),
 
                       // Permissions & Privacy Center Entry Tile
-                      GlassPanel(
+                      LiquidSurface(
+                        level: LiquidSurfaceLevel.card,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16.0,
                           vertical: 14.0,
@@ -109,19 +114,15 @@ class SettingsScreen extends StatelessWidget {
                                 height: 38.0,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: GlassColors.mintPrimary.withValues(
-                                    alpha: 0.15,
-                                  ),
+                                  color: const Color(0x2034D399),
                                   border: Border.all(
-                                    color: GlassColors.mintLight.withValues(
-                                      alpha: 0.4,
-                                    ),
+                                    color: const Color(0x6034D399),
                                   ),
                                 ),
                                 child: const Icon(
                                   Icons.security_rounded,
                                   size: 20.0,
-                                  color: GlassColors.mintLight,
+                                  color: Color(0xFF4ADE80),
                                 ),
                               ),
                               const SizedBox(width: 14.0),
@@ -134,7 +135,7 @@ class SettingsScreen extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 14.5,
                                         fontWeight: FontWeight.w600,
-                                        color: GlassColors.textPrimary,
+                                        color: LiquidColors.textPrimary,
                                       ),
                                     ),
                                     SizedBox(height: 2.0),
@@ -142,7 +143,7 @@ class SettingsScreen extends StatelessWidget {
                                       'Review system roles, permissions & zero-tracking',
                                       style: TextStyle(
                                         fontSize: 11.5,
-                                        color: GlassColors.textSecondary,
+                                        color: LiquidColors.textSecondary,
                                       ),
                                     ),
                                   ],
@@ -150,7 +151,7 @@ class SettingsScreen extends StatelessWidget {
                               ),
                               const Icon(
                                 Icons.chevron_right_rounded,
-                                color: GlassColors.textSecondary,
+                                color: LiquidColors.textSecondary,
                                 size: 22.0,
                               ),
                             ],
@@ -166,12 +167,13 @@ class SettingsScreen extends StatelessWidget {
                           fontSize: 12.0,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.2,
-                          color: GlassColors.textMuted,
+                          color: LiquidColors.textMuted,
                         ),
                       ),
                       const SizedBox(height: 10.0),
 
-                      GlassPanel(
+                      LiquidSurface(
+                        level: LiquidSurfaceLevel.card,
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,12 +183,13 @@ class SettingsScreen extends StatelessWidget {
                                 Container(
                                   width: 12.0,
                                   height: 12.0,
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: GlassColors.cyanAccent,
+                                    color: LiquidColors.silverHighlight,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: GlassColors.cyanAccent,
+                                        color: LiquidColors.silverHighlight
+                                            .withValues(alpha: 0.5),
                                         blurRadius: 8.0,
                                         spreadRadius: 1.0,
                                       ),
@@ -201,7 +204,7 @@ class SettingsScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 16.0,
                                       fontWeight: FontWeight.w600,
-                                      color: GlassColors.textPrimary,
+                                      color: LiquidColors.textPrimary,
                                     ),
                                   ),
                                 ),
@@ -209,10 +212,10 @@ class SettingsScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 12.0),
                             const Text(
-                              'Designed for the OnePlus Nord 4 120Hz AMOLED display. Features real-time translucent backdrop blur, subtle edge specular highlights, and restrained cyan/violet ambient lighting.',
+                              'Designed for the OnePlus Nord 4 120Hz AMOLED display. Features pure water droplets flowing over dark glass, tactile scale compression, and directional specular edge highlights.',
                               style: TextStyle(
                                 fontSize: 13.0,
-                                color: GlassColors.textSecondary,
+                                color: LiquidColors.textSecondary,
                                 height: 1.45,
                               ),
                             ),
@@ -222,24 +225,21 @@ class SettingsScreen extends StatelessWidget {
                             Row(
                               children: [
                                 _buildColorToken(
-                                  'Cyan',
-                                  GlassColors.cyanAccent,
+                                  'Silver',
+                                  LiquidColors.silverHighlight,
                                 ),
                                 const SizedBox(width: 8.0),
                                 _buildColorToken(
-                                  'Icy Blue',
-                                  GlassColors.icyBlue,
+                                  'Graphite',
+                                  LiquidColors.surfaceElevated,
                                 ),
                                 const SizedBox(width: 8.0),
                                 _buildColorToken(
-                                  'Violet',
-                                  GlassColors.softViolet,
+                                  'Meniscus',
+                                  LiquidColors.specularMeniscus,
                                 ),
                                 const SizedBox(width: 8.0),
-                                _buildColorToken(
-                                  'Mint',
-                                  GlassColors.mintPrimary,
-                                ),
+                                _buildColorToken('Mist', LiquidColors.mistGrey),
                               ],
                             ),
                           ],
@@ -255,37 +255,39 @@ class SettingsScreen extends StatelessWidget {
                           fontSize: 12.0,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.2,
-                          color: GlassColors.textMuted,
+                          color: LiquidColors.textMuted,
                         ),
                       ),
                       const SizedBox(height: 10.0),
 
-                      GlassPanel(
+                      LiquidSurface(
+                        level: LiquidSurfaceLevel.card,
                         padding: const EdgeInsets.all(18.0),
                         child: Column(
                           children: [
                             _buildInfoRow(
-                              icon: Icons.blur_on_rounded,
-                              title: 'Backdrop Blur Intensity',
-                              subtitle: 'Default: 16.0 sigma (Configurable in Phase 2)',
+                              icon: Icons.water_drop_rounded,
+                              title: 'Droplet Surface Tension',
+                              subtitle: 'Active: Physical curvature & edge reflections',
                             ),
                             const Divider(
-                              color: GlassColors.borderSubtle,
+                              color: LiquidColors.borderSubtle,
                               height: 24.0,
                             ),
                             _buildInfoRow(
                               icon: Icons.vibration_rounded,
-                              title: 'Tactile Haptic Feedback',
-                              subtitle: 'Active: Light impact per keypress',
+                              title: 'Tactile Water Haptics',
+                              subtitle: 'Active: Light impact per droplet compression',
                             ),
                             const Divider(
-                              color: GlassColors.borderSubtle,
+                              color: LiquidColors.borderSubtle,
                               height: 24.0,
                             ),
                             _buildInfoRow(
                               icon: Icons.palette_outlined,
-                              title: 'Accent Palette Presets',
-                              subtitle: 'Cyan Ice / Neon Violet / Emerald Glow',
+                              title: 'Liquid AMOLED Aesthetics',
+                              subtitle:
+                                  'Pure Black / Silver Highlights / Mist Grey',
                             ),
                           ],
                         ),
@@ -300,12 +302,13 @@ class SettingsScreen extends StatelessWidget {
                           fontSize: 12.0,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.2,
-                          color: GlassColors.textMuted,
+                          color: LiquidColors.textMuted,
                         ),
                       ),
                       const SizedBox(height: 10.0),
 
-                      GlassPanel(
+                      LiquidSurface(
+                        level: LiquidSurfaceLevel.card,
                         padding: const EdgeInsets.all(18.0),
                         child: Column(
                           children: [
@@ -315,7 +318,7 @@ class SettingsScreen extends StatelessWidget {
                               subtitle: 'OnePlus Nord 4 (Android 16 Ready)',
                             ),
                             const Divider(
-                              color: GlassColors.borderSubtle,
+                              color: LiquidColors.borderSubtle,
                               height: 24.0,
                             ),
                             _buildInfoRow(
@@ -324,7 +327,7 @@ class SettingsScreen extends StatelessWidget {
                               subtitle: 'Phase 5 — Production Hardened & Liquid Glass Dialing',
                             ),
                             const Divider(
-                              color: GlassColors.borderSubtle,
+                              color: LiquidColors.borderSubtle,
                               height: 24.0,
                             ),
                             _buildInfoRow(
@@ -354,7 +357,7 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
-          color: color.withValues(alpha: 0.15),
+          color: LiquidColors.surfaceElevated,
           border: Border.all(color: color.withValues(alpha: 0.4), width: 1.0),
         ),
         child: Column(
@@ -372,7 +375,9 @@ class SettingsScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10.0,
                 fontWeight: FontWeight.w500,
-                color: color,
+                color: color == LiquidColors.surfaceElevated
+                    ? LiquidColors.textSecondary
+                    : color,
               ),
             ),
           ],
@@ -388,15 +393,11 @@ class SettingsScreen extends StatelessWidget {
   }) {
     return Row(
       children: [
-        Container(
-          width: 38.0,
-          height: 38.0,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.0),
-            color: GlassColors.glassFillLight,
-            border: Border.all(color: GlassColors.borderSubtle),
+        LiquidDroplet(
+          size: 38.0,
+          child: Center(
+            child: Icon(icon, size: 20.0, color: LiquidColors.silverHighlight),
           ),
-          child: Icon(icon, size: 20.0, color: GlassColors.icyBlue),
         ),
         const SizedBox(width: 14.0),
         Expanded(
@@ -408,7 +409,7 @@ class SettingsScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.w600,
-                  color: GlassColors.textPrimary,
+                  color: LiquidColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 2.0),
@@ -416,7 +417,7 @@ class SettingsScreen extends StatelessWidget {
                 subtitle,
                 style: const TextStyle(
                   fontSize: 12.0,
-                  color: GlassColors.textSecondary,
+                  color: LiquidColors.textSecondary,
                 ),
               ),
             ],

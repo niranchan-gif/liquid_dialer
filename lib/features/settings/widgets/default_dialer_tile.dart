@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/glass_styles.dart';
-import '../../../shared/widgets/glass_panel.dart';
+import '../../../core/theme/liquid_theme.dart';
+import '../../../shared/widgets/liquid_loading_indicator.dart';
+import '../../../shared/widgets/liquid_surface.dart';
 import '../../calls/call_controller.dart';
 
-/// Liquid Glass panel displaying Android Default Phone App status
-/// and an interactive button to launch the system role request.
+/// Pure Liquid Surface panel displaying Android Default Phone App status
+/// and an interactive water-droplet button to launch the system role request.
 class DefaultDialerTile extends StatefulWidget {
   const DefaultDialerTile({super.key, this.controller});
 
@@ -59,8 +60,10 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
         final isRequesting = _controller.isRequestingRole;
         final feedback = _controller.roleFeedbackMessage;
 
-        return GlassPanel(
+        return LiquidSurface(
+          level: LiquidSurfaceLevel.card,
           padding: const EdgeInsets.all(20.0),
+          borderRadius: BorderRadius.circular(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -73,12 +76,14 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isDefault
-                          ? GlassColors.mintPrimary.withValues(alpha: 0.15)
-                          : GlassColors.icyBlue.withValues(alpha: 0.15),
+                          ? const Color(0x2034D399)
+                          : LiquidColors.surfaceElevated,
                       border: Border.all(
                         color: isDefault
-                            ? GlassColors.mintPrimary.withValues(alpha: 0.35)
-                            : GlassColors.icyBlue.withValues(alpha: 0.35),
+                            ? const Color(0x6034D399)
+                            : LiquidColors.specularMeniscus.withValues(
+                                alpha: 0.3,
+                              ),
                         width: 1.2,
                       ),
                     ),
@@ -87,8 +92,8 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
                           ? Icons.verified_user_rounded
                           : Icons.phone_android_rounded,
                       color: isDefault
-                          ? GlassColors.mintLight
-                          : GlassColors.icyBlue,
+                          ? const Color(0xFF4ADE80)
+                          : LiquidColors.silverHighlight,
                       size: 22.0,
                     ),
                   ),
@@ -103,7 +108,7 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
                             fontSize: 11.0,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 1.2,
-                            color: GlassColors.textMuted,
+                            color: LiquidColors.textMuted,
                           ),
                         ),
                         const SizedBox(height: 3.0),
@@ -114,7 +119,7 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
                           style: const TextStyle(
                             fontSize: 16.0,
                             fontWeight: FontWeight.w600,
-                            color: GlassColors.textPrimary,
+                            color: LiquidColors.textPrimary,
                           ),
                         ),
                       ],
@@ -128,12 +133,12 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12.0),
                       color: isDefault
-                          ? GlassColors.mintPrimary.withValues(alpha: 0.15)
-                          : GlassColors.glassFillUltraLight,
+                          ? const Color(0x2034D399)
+                          : LiquidColors.surfaceDark,
                       border: Border.all(
                         color: isDefault
-                            ? GlassColors.mintPrimary.withValues(alpha: 0.3)
-                            : GlassColors.borderSubtle,
+                            ? const Color(0x5034D399)
+                            : LiquidColors.borderSubtle,
                       ),
                     ),
                     child: Text(
@@ -142,8 +147,8 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
                         fontSize: 11.0,
                         fontWeight: FontWeight.w600,
                         color: isDefault
-                            ? GlassColors.mintLight
-                            : GlassColors.textSecondary,
+                            ? const Color(0xFF4ADE80)
+                            : LiquidColors.textSecondary,
                       ),
                     ),
                   ),
@@ -156,7 +161,7 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
                     : 'Setting Liquid Dialer as your default phone app enables system dial intent handling and native telecom call integration.',
                 style: const TextStyle(
                   fontSize: 13.0,
-                  color: GlassColors.textSecondary,
+                  color: LiquidColors.textSecondary,
                   height: 1.4,
                 ),
               ),
@@ -168,8 +173,8 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
                     fontSize: 12.0,
                     fontWeight: FontWeight.w500,
                     color: isDefault
-                        ? GlassColors.mintLight
-                        : GlassColors.softViolet,
+                        ? const Color(0xFF4ADE80)
+                        : LiquidColors.mistGrey,
                   ),
                 ),
               ],
@@ -183,21 +188,19 @@ class _DefaultDialerTileState extends State<DefaultDialerTile>
                         ? null
                         : () => _controller.requestDefaultDialer(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: GlassColors.icyBlue,
+                      backgroundColor: LiquidColors.silverHighlight,
                       foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      padding: const EdgeInsets.symmetric(vertical: 13.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14.0),
                       ),
+                      elevation: 0,
                     ),
                     child: isRequesting
                         ? const SizedBox(
                             width: 20.0,
                             height: 20.0,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.0,
-                              color: Colors.black,
-                            ),
+                            child: LiquidLoadingIndicator(size: 16.0),
                           )
                         : const Text(
                             'Set as Default Phone App',

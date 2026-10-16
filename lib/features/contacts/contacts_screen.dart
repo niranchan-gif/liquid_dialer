@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/glass_styles.dart';
+import '../../core/theme/liquid_theme.dart';
 import '../../shared/widgets/glass_icon_button.dart';
-import '../../shared/widgets/glass_panel.dart';
+import '../../shared/widgets/liquid_droplet.dart';
+import '../../shared/widgets/liquid_loading_indicator.dart';
+import '../../shared/widgets/liquid_surface.dart';
 import '../settings/settings_screen.dart';
 import 'contact_details_screen.dart';
 import 'controllers/contacts_controller.dart';
@@ -92,7 +94,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                           fontSize: 28.0,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.4,
-                          color: GlassColors.textPrimary,
+                          color: LiquidColors.textPrimary,
                         ),
                       ),
                       Row(
@@ -151,10 +153,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     // 1. Loading State
     if (_controller.isLoading && _controller.allContacts.isEmpty) {
       return const Center(
-        child: CircularProgressIndicator(
-          color: GlassColors.cyanAccent,
-          strokeWidth: 2.5,
-        ),
+        child: LiquidLoadingIndicator(label: 'Loading contacts...'),
       );
     }
 
@@ -170,7 +169,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
     // 3. Error State
     if (_controller.errorMessage != null && _controller.allContacts.isEmpty) {
       return Center(
-        child: GlassPanel(
+        child: LiquidSurface(
+          level: LiquidSurfaceLevel.card,
           margin: const EdgeInsets.symmetric(horizontal: 12.0),
           padding: const EdgeInsets.all(24.0),
           child: Column(
@@ -179,7 +179,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
               const Icon(
                 Icons.error_outline_rounded,
                 size: 40.0,
-                color: GlassColors.danger,
+                color: LiquidColors.callRed,
               ),
               const SizedBox(height: 14.0),
               const Text(
@@ -187,7 +187,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
-                  color: GlassColors.textPrimary,
+                  color: LiquidColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8.0),
@@ -196,7 +196,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 13.0,
-                  color: GlassColors.textSecondary,
+                  color: LiquidColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 18.0),
@@ -206,8 +206,9 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 icon: const Icon(Icons.refresh_rounded, size: 16.0),
                 label: const Text('Try Again'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: GlassColors.icyBlue,
+                  backgroundColor: LiquidColors.silverHighlight,
                   foregroundColor: Colors.black,
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
@@ -222,23 +223,21 @@ class _ContactsScreenState extends State<ContactsScreen> {
     // 4. Device has 0 contacts
     if (_controller.isEmpty) {
       return Center(
-        child: GlassPanel(
+        child: LiquidSurface(
+          level: LiquidSurfaceLevel.card,
           margin: const EdgeInsets.symmetric(horizontal: 12.0),
           padding: const EdgeInsets.all(28.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 60.0,
-                height: 60.0,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: GlassColors.icyBlue.withValues(alpha: 0.12),
-                ),
-                child: const Icon(
-                  Icons.person_off_rounded,
-                  size: 30.0,
-                  color: GlassColors.icyBlue,
+              LiquidDroplet(
+                size: 60.0,
+                child: const Center(
+                  child: Icon(
+                    Icons.person_off_rounded,
+                    size: 28.0,
+                    color: LiquidColors.silverHighlight,
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -247,7 +246,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
-                  color: GlassColors.textPrimary,
+                  color: LiquidColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8.0),
@@ -256,7 +255,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13.0,
-                  color: GlassColors.textSecondary,
+                  color: LiquidColors.textSecondary,
                 ),
               ),
             ],
@@ -274,7 +273,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
             const Icon(
               Icons.search_off_rounded,
               size: 42.0,
-              color: GlassColors.textMuted,
+              color: LiquidColors.textMuted,
             ),
             const SizedBox(height: 12.0),
             Text(
@@ -282,13 +281,13 @@ class _ContactsScreenState extends State<ContactsScreen> {
               style: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
-                color: GlassColors.textPrimary,
+                color: LiquidColors.textPrimary,
               ),
             ),
             const SizedBox(height: 6.0),
             const Text(
               'Check name spelling or digits.',
-              style: TextStyle(fontSize: 13.0, color: GlassColors.textMuted),
+              style: TextStyle(fontSize: 13.0, color: LiquidColors.textMuted),
             ),
           ],
         ),
@@ -301,8 +300,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
         !_controller.hasSearchQuery && _controller.favoriteContacts.isNotEmpty;
 
     return RefreshIndicator(
-      color: GlassColors.cyanAccent,
-      backgroundColor: GlassColors.surfaceDark,
+      color: LiquidColors.silverHighlight,
+      backgroundColor: LiquidColors.surfaceElevated,
       onRefresh: () => _controller.loadContacts(forceReload: true),
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(

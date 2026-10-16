@@ -54,13 +54,37 @@ class GlassPanel extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
           child: Container(
-            padding: padding ?? const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               borderRadius: effectiveRadius,
               gradient: gradient ?? GlassDecorations.panelFillGradient,
               border: border ?? GlassDecorations.specularBorder,
             ),
-            child: child,
+            child: Stack(
+              children: [
+                // Top-edge specular meniscus light
+                Positioned(
+                  top: 0,
+                  left: 14.0,
+                  right: 14.0,
+                  height: 1.2,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Color(0x55FFFFFF),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: padding ?? const EdgeInsets.all(16.0),
+                  child: child,
+                ),
+              ],
+            ),
           ),
         ),
       ),

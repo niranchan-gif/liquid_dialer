@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/permissions/phone_permissions_service.dart';
-import '../../core/theme/glass_styles.dart';
+import '../../core/theme/liquid_theme.dart';
 import '../../core/utils/privacy_logger.dart';
 import '../../shared/widgets/glass_icon_button.dart';
-import '../../shared/widgets/glass_panel.dart';
+import '../../shared/widgets/liquid_loading_indicator.dart';
+import '../../shared/widgets/liquid_surface.dart';
 import '../calls/call_controller.dart';
 
 /// Full-screen Liquid Glass Permission & Privacy Center.
@@ -132,20 +133,23 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GlassColors.background,
+      backgroundColor: LiquidColors.background,
       body: Stack(
         children: [
-          // Ambient emerald/cyan background glow
+          // Subtle top liquid halo
           Positioned(
             top: -50,
             right: -50,
             child: Container(
               width: 280,
               height: 280,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [Color(0x1810B981), Colors.transparent],
+                  colors: [
+                    LiquidColors.specularMeniscus.withValues(alpha: 0.04),
+                    Colors.transparent,
+                  ],
                 ),
               ),
             ),
@@ -181,7 +185,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                               style: TextStyle(
                                 fontSize: 19.0,
                                 fontWeight: FontWeight.w700,
-                                color: GlassColors.textPrimary,
+                                color: LiquidColors.textPrimary,
                               ),
                             ),
                             SizedBox(height: 2.0),
@@ -189,7 +193,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                               'Local on-device protection',
                               style: TextStyle(
                                 fontSize: 12.0,
-                                color: GlassColors.icyBlue,
+                                color: LiquidColors.silverHighlight,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -199,7 +203,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                       IconButton(
                         icon: const Icon(
                           Icons.refresh_rounded,
-                          color: GlassColors.textSecondary,
+                          color: LiquidColors.textSecondary,
                           size: 22.0,
                         ),
                         tooltip: 'Refresh Statuses',
@@ -227,7 +231,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                           fontSize: 12.0,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.2,
-                          color: GlassColors.textMuted,
+                          color: LiquidColors.textMuted,
                         ),
                       ),
                       const SizedBox(height: 12.0),
@@ -308,7 +312,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                           fontSize: 12.0,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.2,
-                          color: GlassColors.textMuted,
+                          color: LiquidColors.textMuted,
                         ),
                       ),
                       const SizedBox(height: 12.0),
@@ -323,7 +327,8 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                       const SizedBox(height: 20.0),
 
                       // Open System Settings Action Button
-                      GlassPanel(
+                      LiquidSurface(
+                        level: LiquidSurfaceLevel.card,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20.0,
                           vertical: 14.0,
@@ -338,7 +343,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                               Icon(
                                 Icons.settings_rounded,
                                 size: 18.0,
-                                color: GlassColors.icyBlue,
+                                color: LiquidColors.silverHighlight,
                               ),
                               SizedBox(width: 10.0),
                               Text(
@@ -346,7 +351,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                                 style: TextStyle(
                                   fontSize: 14.5,
                                   fontWeight: FontWeight.w600,
-                                  color: GlassColors.textPrimary,
+                                  color: LiquidColors.textPrimary,
                                 ),
                               ),
                             ],
@@ -365,10 +370,10 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
           if (_isLoading)
             Positioned.fill(
               child: Container(
-                color: Colors.black.withValues(alpha: 0.3),
+                color: Colors.black.withValues(alpha: 0.5),
                 child: const Center(
-                  child: CircularProgressIndicator(
-                    color: GlassColors.cyanAccent,
+                  child: LiquidLoadingIndicator(
+                    label: 'Verifying permissions...',
                   ),
                 ),
               ),
@@ -379,7 +384,8 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
   }
 
   Widget _buildPrivacyHeroCard() {
-    return GlassPanel(
+    return LiquidSurface(
+      level: LiquidSurfaceLevel.card,
       padding: const EdgeInsets.all(18.0),
       borderRadius: BorderRadius.circular(16.0),
       child: Row(
@@ -390,14 +396,12 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
             height: 44.0,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: GlassColors.mintPrimary.withValues(alpha: 0.15),
-              border: Border.all(
-                color: GlassColors.mintLight.withValues(alpha: 0.4),
-              ),
+              color: const Color(0x2034D399),
+              border: Border.all(color: const Color(0x6034D399)),
             ),
             child: const Icon(
               Icons.verified_user_rounded,
-              color: GlassColors.mintLight,
+              color: Color(0xFF4ADE80),
               size: 24.0,
             ),
           ),
@@ -411,7 +415,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                   style: TextStyle(
                     fontSize: 15.0,
                     fontWeight: FontWeight.w700,
-                    color: GlassColors.textPrimary,
+                    color: LiquidColors.textPrimary,
                   ),
                 ),
                 SizedBox(height: 6.0),
@@ -420,7 +424,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                   style: TextStyle(
                     fontSize: 12.5,
                     height: 1.45,
-                    color: GlassColors.textSecondary,
+                    color: LiquidColors.textSecondary,
                   ),
                 ),
               ],
@@ -441,7 +445,8 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
     required VoidCallback onAction,
     required String actionLabel,
   }) {
-    return GlassPanel(
+    return LiquidSurface(
+      level: LiquidSurfaceLevel.card,
       padding: const EdgeInsets.all(16.0),
       borderRadius: BorderRadius.circular(14.0),
       child: Column(
@@ -455,20 +460,20 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
                   color: isGranted
-                      ? GlassColors.mintPrimary.withValues(alpha: 0.15)
-                      : GlassColors.glassFillLight,
+                      ? const Color(0x2034D399)
+                      : LiquidColors.surfaceElevated,
                   border: Border.all(
                     color: isGranted
-                        ? GlassColors.mintLight.withValues(alpha: 0.4)
-                        : GlassColors.borderSubtle,
+                        ? const Color(0x6034D399)
+                        : LiquidColors.borderSubtle,
                   ),
                 ),
                 child: Icon(
                   icon,
                   size: 20.0,
                   color: isGranted
-                      ? GlassColors.mintLight
-                      : GlassColors.icyBlue,
+                      ? const Color(0xFF4ADE80)
+                      : LiquidColors.silverHighlight,
                 ),
               ),
               const SizedBox(width: 12.0),
@@ -481,14 +486,14 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                       style: const TextStyle(
                         fontSize: 14.5,
                         fontWeight: FontWeight.w600,
-                        color: GlassColors.textPrimary,
+                        color: LiquidColors.textPrimary,
                       ),
                     ),
                     Text(
                       subtitle,
                       style: const TextStyle(
                         fontSize: 11.0,
-                        color: GlassColors.textMuted,
+                        color: LiquidColors.textMuted,
                       ),
                     ),
                   ],
@@ -506,7 +511,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
             style: const TextStyle(
               fontSize: 12.0,
               height: 1.4,
-              color: GlassColors.textSecondary,
+              color: LiquidColors.textSecondary,
             ),
           ),
           if (!isGranted) ...[
@@ -516,9 +521,9 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
               child: isPermanentlyDenied
                   ? OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: GlassColors.danger,
+                        foregroundColor: LiquidColors.callRed,
                         side: BorderSide(
-                          color: GlassColors.danger.withValues(alpha: 0.5),
+                          color: LiquidColors.callRed.withValues(alpha: 0.5),
                         ),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14.0,
@@ -537,10 +542,8 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                     )
                   : ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: GlassColors.icyBlue.withValues(
-                          alpha: 0.2,
-                        ),
-                        foregroundColor: GlassColors.icyBlue,
+                        backgroundColor: LiquidColors.surfaceElevated,
+                        foregroundColor: LiquidColors.silverHighlight,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14.0,
@@ -549,7 +552,9 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           side: BorderSide(
-                            color: GlassColors.icyBlue.withValues(alpha: 0.4),
+                            color: LiquidColors.specularMeniscus.withValues(
+                              alpha: 0.3,
+                            ),
                           ),
                         ),
                       ),
@@ -579,22 +584,20 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
-          color: GlassColors.mintPrimary.withValues(alpha: 0.2),
-          border: Border.all(
-            color: GlassColors.mintLight.withValues(alpha: 0.5),
-          ),
+          color: const Color(0x2034D399),
+          border: Border.all(color: const Color(0x6034D399)),
         ),
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.check_rounded, size: 12.0, color: GlassColors.mintLight),
+            Icon(Icons.check_rounded, size: 12.0, color: Color(0xFF4ADE80)),
             SizedBox(width: 4.0),
             Text(
               'Granted',
               style: TextStyle(
                 fontSize: 11.0,
                 fontWeight: FontWeight.w600,
-                color: GlassColors.mintLight,
+                color: Color(0xFF4ADE80),
               ),
             ),
           ],
@@ -605,15 +608,17 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
-          color: GlassColors.danger.withValues(alpha: 0.15),
-          border: Border.all(color: GlassColors.danger.withValues(alpha: 0.5)),
+          color: LiquidColors.callRed.withValues(alpha: 0.15),
+          border: Border.all(
+            color: LiquidColors.callRed.withValues(alpha: 0.5),
+          ),
         ),
         child: const Text(
           'Denied in Settings',
           style: TextStyle(
             fontSize: 11.0,
             fontWeight: FontWeight.w600,
-            color: GlassColors.danger,
+            color: LiquidColors.callRed,
           ),
         ),
       );
@@ -638,7 +643,8 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
   }
 
   Widget _buildArchitectureCard() {
-    return GlassPanel(
+    return LiquidSurface(
+      level: LiquidSurfaceLevel.card,
       padding: const EdgeInsets.all(16.0),
       borderRadius: BorderRadius.circular(14.0),
       child: Column(
@@ -649,13 +655,13 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
             description:
                 'Liquid Dialer does not declare android.permission.INTERNET.',
           ),
-          const Divider(color: GlassColors.borderSubtle, height: 20.0),
+          const Divider(color: LiquidColors.borderSubtle, height: 20.0),
           _buildFeatureBullet(
             icon: Icons.mic_none_rounded,
             title: 'No Audio Surveillance',
             description: 'No background call recording or microphone logging.',
           ),
-          const Divider(color: GlassColors.borderSubtle, height: 20.0),
+          const Divider(color: LiquidColors.borderSubtle, height: 20.0),
           _buildFeatureBullet(
             icon: Icons.storage_rounded,
             title: 'Transient Content Queries',
@@ -674,7 +680,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18.0, color: GlassColors.icyBlue),
+        Icon(icon, size: 18.0, color: LiquidColors.silverHighlight),
         const SizedBox(width: 12.0),
         Expanded(
           child: Column(
@@ -685,7 +691,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                 style: const TextStyle(
                   fontSize: 13.0,
                   fontWeight: FontWeight.w600,
-                  color: GlassColors.textPrimary,
+                  color: LiquidColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 2.0),
@@ -693,7 +699,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                 description,
                 style: const TextStyle(
                   fontSize: 11.5,
-                  color: GlassColors.textSecondary,
+                  color: LiquidColors.textSecondary,
                 ),
               ),
             ],
@@ -706,7 +712,8 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
   Widget _buildDiagnosticsSection() {
     final recentLogs = PrivacyLogger.recentLogs;
 
-    return GlassPanel(
+    return LiquidSurface(
+      level: LiquidSurfaceLevel.card,
       padding: const EdgeInsets.all(16.0),
       borderRadius: BorderRadius.circular(14.0),
       child: Column(
@@ -717,7 +724,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
               const Icon(
                 Icons.terminal_rounded,
                 size: 18.0,
-                color: GlassColors.softViolet,
+                color: LiquidColors.mistGrey,
               ),
               const SizedBox(width: 10.0),
               const Expanded(
@@ -726,7 +733,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                   style: TextStyle(
                     fontSize: 14.0,
                     fontWeight: FontWeight.w600,
-                    color: GlassColors.textPrimary,
+                    color: LiquidColors.textPrimary,
                   ),
                 ),
               ),
@@ -738,7 +745,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                   _showDiagnostics ? 'Hide' : 'View (${recentLogs.length})',
                   style: const TextStyle(
                     fontSize: 12.0,
-                    color: GlassColors.icyBlue,
+                    color: LiquidColors.silverHighlight,
                   ),
                 ),
               ),
@@ -747,7 +754,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
           const SizedBox(height: 4.0),
           const Text(
             'All technical diagnostic entries automatically scrub and mask phone numbers (***-***-1234) and sensitive parameters.',
-            style: TextStyle(fontSize: 11.5, color: GlassColors.textSecondary),
+            style: TextStyle(fontSize: 11.5, color: LiquidColors.textSecondary),
           ),
           if (_showDiagnostics) ...[
             const SizedBox(height: 12.0),
@@ -757,7 +764,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(8.0),
-                border: Border.all(color: GlassColors.borderSubtle),
+                border: Border.all(color: LiquidColors.borderSubtle),
               ),
               child: recentLogs.isEmpty
                   ? const Center(
@@ -765,7 +772,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                         'No diagnostic events recorded yet.',
                         style: TextStyle(
                           fontSize: 12.0,
-                          color: GlassColors.textMuted,
+                          color: LiquidColors.textMuted,
                         ),
                       ),
                     )
@@ -780,7 +787,7 @@ class _PrivacyCenterScreenState extends State<PrivacyCenterScreen> {
                             style: const TextStyle(
                               fontFamily: 'monospace',
                               fontSize: 10.5,
-                              color: GlassColors.textSecondary,
+                              color: LiquidColors.textSecondary,
                             ),
                           ),
                         );

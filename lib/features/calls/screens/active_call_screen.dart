@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/glass_styles.dart';
+import '../../../core/theme/liquid_theme.dart';
 import '../../../shared/widgets/glass_key.dart';
 import '../call_controller.dart';
 import '../models/call_session.dart';
@@ -87,9 +87,9 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       decoration: BoxDecoration(
-        color: const Color(0xFF101010),
+        color: LiquidColors.surfaceElevated,
         borderRadius: BorderRadius.circular(20.0),
-        border: Border.all(color: GlassColors.borderSubtle),
+        border: Border.all(color: LiquidColors.borderSubtle),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -105,8 +105,8 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                     fontWeight: FontWeight.w600,
                     letterSpacing: 2.0,
                     color: _dtmfDigits.isEmpty
-                        ? GlassColors.textMuted
-                        : GlassColors.silverAccent,
+                        ? LiquidColors.textMuted
+                        : LiquidColors.silverHighlight,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -116,7 +116,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                 key: const Key('closeDtmfDialpadButton'),
                 icon: const Icon(
                   Icons.close_rounded,
-                  color: GlassColors.textSecondary,
+                  color: LiquidColors.textSecondary,
                   size: 20.0,
                 ),
                 onPressed: () => setState(() => _isDialpadVisible = false),
@@ -151,7 +151,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
     final mediaQuery = MediaQuery.of(context);
 
     return Scaffold(
-      backgroundColor: GlassColors.background,
+      backgroundColor: LiquidColors.background,
       body: Stack(
         children: [
           // Ambient soft restrained silver background glow
@@ -225,7 +225,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                                 fontSize: avatarFontSize,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 1.0,
-                                color: GlassColors.textPrimary,
+                                color: LiquidColors.textPrimary,
                               ),
                             ),
                           ),
@@ -240,7 +240,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                             fontSize: isCompact ? 24.0 : 28.0,
                             fontWeight: FontWeight.w600,
                             letterSpacing: -0.5,
-                            color: GlassColors.textPrimary,
+                            color: LiquidColors.textPrimary,
                           ),
                           textAlign: TextAlign.center,
                           maxLines: 1,
@@ -257,7 +257,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                             style: const TextStyle(
                               fontSize: 15.0,
                               fontWeight: FontWeight.w400,
-                              color: GlassColors.textSecondary,
+                              color: LiquidColors.textSecondary,
                               letterSpacing: 0.4,
                             ),
                           ),
@@ -278,7 +278,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                                 fontSize: isCompact ? 18.0 : 22.0,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 1.5,
-                                color: GlassColors.textPrimary,
+                                color: LiquidColors.textPrimary,
                                 fontFeatures: const [
                                   FontFeature.tabularFigures(),
                                 ],
@@ -290,7 +290,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                               style: TextStyle(
                                 fontSize: 15.0,
                                 fontWeight: FontWeight.w500,
-                                color: GlassColors.silverHighlight,
+                                color: LiquidColors.silverHighlight,
                                 letterSpacing: 0.5,
                               ),
                             );
@@ -300,7 +300,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                               style: TextStyle(
                                 fontSize: 15.0,
                                 fontWeight: FontWeight.w500,
-                                color: GlassColors.silverSubtle,
+                                color: LiquidColors.mistGrey,
                                 letterSpacing: 0.5,
                               ),
                             );
@@ -310,7 +310,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                               style: const TextStyle(
                                 fontSize: 15.0,
                                 fontWeight: FontWeight.w500,
-                                color: GlassColors.danger,
+                                color: LiquidColors.callRed,
                               ),
                             );
                           }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/glass_styles.dart';
+import '../../core/theme/liquid_theme.dart';
 import '../../shared/widgets/glass_icon_button.dart';
-import '../../shared/widgets/glass_panel.dart';
+import '../../shared/widgets/liquid_droplet.dart';
+import '../../shared/widgets/liquid_surface.dart';
 import 'models/contact_item.dart';
 
 /// Detailed view displaying all phone numbers, labels, avatar, and keypad forwarding for a contact.
@@ -41,7 +42,7 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
     final contact = widget.contact;
 
     return Scaffold(
-      backgroundColor: GlassColors.background,
+      backgroundColor: LiquidColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -65,7 +66,7 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.w600,
-                      color: GlassColors.textPrimary,
+                      color: LiquidColors.textPrimary,
                     ),
                   ),
                   IconButton(
@@ -76,7 +77,7 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                           : Icons.star_outline_rounded,
                       color: _isFavorite
                           ? const Color(0xFFFFB800)
-                          : GlassColors.textSecondary,
+                          : LiquidColors.textSecondary,
                       size: 26.0,
                     ),
                     tooltip: _isFavorite
@@ -95,25 +96,8 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                   children: [
                     const SizedBox(height: 16.0),
 
-                    // Avatar Card
-                    Center(
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 108.0,
-                            height: 108.0,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: RadialGradient(
-                                colors: [Color(0x20FFFFFF), Colors.transparent],
-                              ),
-                            ),
-                          ),
-                          _buildLargeAvatar(),
-                        ],
-                      ),
-                    ),
+                    // Avatar Droplet
+                    Center(child: _buildLargeAvatar()),
 
                     const SizedBox(height: 16.0),
 
@@ -124,7 +108,7 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                       style: const TextStyle(
                         fontSize: 24.0,
                         fontWeight: FontWeight.w700,
-                        color: GlassColors.textPrimary,
+                        color: LiquidColors.textPrimary,
                         letterSpacing: 0.3,
                       ),
                     ),
@@ -140,20 +124,21 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                           fontSize: 12.0,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.5,
-                          color: GlassColors.textMuted,
+                          color: LiquidColors.textMuted,
                         ),
                       ),
                     ),
                     const SizedBox(height: 10.0),
 
                     if (contact.phones.isEmpty)
-                      const GlassPanel(
-                        padding: EdgeInsets.all(20.0),
-                        child: Center(
+                      LiquidSurface(
+                        level: LiquidSurfaceLevel.card,
+                        padding: const EdgeInsets.all(20.0),
+                        child: const Center(
                           child: Text(
                             'No phone numbers registered for this contact.',
                             style: TextStyle(
-                              color: GlassColors.textSecondary,
+                              color: LiquidColors.textSecondary,
                               fontSize: 14.0,
                             ),
                           ),
@@ -161,112 +146,103 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
                       )
                     else
                       ...contact.phones.map((phone) {
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12.0),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF101010),
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: LiquidSurface(
+                            level: LiquidSurfaceLevel.card,
                             borderRadius: BorderRadius.circular(16.0),
-                            border: Border.all(
-                              color: const Color(0x1AFFFFFF),
-                              width: 1.0,
-                            ),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(16.0),
-                              splashColor: const Color(0x18FFFFFF),
-                              highlightColor: const Color(0x0CFFFFFF),
-                              onTap: () {
-                                widget.onSelectNumber(phone.number);
-                                Navigator.of(context).pop();
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                  vertical: 14.0,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 40.0,
-                                      height: 40.0,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: const Color(0xFF1B1B1B),
-                                        border: Border.all(
-                                          color: const Color(0x28FFFFFF),
-                                          width: 1.0,
+                            padding: EdgeInsets.zero,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16.0),
+                                splashColor: const Color(0x18FFFFFF),
+                                highlightColor: const Color(0x0CFFFFFF),
+                                onTap: () {
+                                  widget.onSelectNumber(phone.number);
+                                  Navigator.of(context).pop();
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                    vertical: 14.0,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      LiquidDroplet(
+                                        size: 40.0,
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.phone_rounded,
+                                            color: LiquidColors.silverHighlight,
+                                            size: 20.0,
+                                          ),
                                         ),
                                       ),
-                                      child: const Icon(
-                                        Icons.phone_rounded,
-                                        color: GlassColors.textPrimary,
-                                        size: 20.0,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 14.0),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            phone.number,
-                                            style: const TextStyle(
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.w600,
-                                              color: GlassColors.textPrimary,
-                                              letterSpacing: 0.5,
+                                      const SizedBox(width: 14.0),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              phone.number,
+                                              style: const TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.w600,
+                                                color: LiquidColors.textPrimary,
+                                                letterSpacing: 0.5,
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(height: 2.0),
-                                          Text(
-                                            phone.label,
-                                            style: const TextStyle(
-                                              fontSize: 12.0,
-                                              color: GlassColors.textSecondary,
+                                            const SizedBox(height: 2.0),
+                                            Text(
+                                              phone.label,
+                                              style: const TextStyle(
+                                                fontSize: 12.0,
+                                                color:
+                                                    LiquidColors.textSecondary,
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12.0,
-                                        vertical: 6.0,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          12.0,
-                                        ),
-                                        color: const Color(0xFF172B1E),
-                                        border: Border.all(
-                                          color: const Color(0x444EBE88),
-                                          width: 1.0,
+                                          ],
                                         ),
                                       ),
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.call_rounded,
-                                            size: 14.0,
-                                            color: Color(0xFF5CD898),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12.0,
+                                          vertical: 6.0,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            12.0,
                                           ),
-                                          SizedBox(width: 5.0),
-                                          Text(
-                                            'Call',
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF5CD898),
+                                          color: const Color(0xFF142419),
+                                          border: Border.all(
+                                            color: const Color(0x554EBE88),
+                                            width: 1.0,
+                                          ),
+                                        ),
+                                        child: const Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.call_rounded,
+                                              size: 14.0,
+                                              color: Color(0xFF4ADE80),
                                             ),
-                                          ),
-                                        ],
+                                            SizedBox(width: 5.0),
+                                            Text(
+                                              'Call',
+                                              style: TextStyle(
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xFF4ADE80),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -291,7 +267,10 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
         height: 88.0,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: const Color(0x35FFFFFF), width: 1.5),
+          border: Border.all(
+            color: LiquidColors.specularMeniscus.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
           image: DecorationImage(
             image: MemoryImage(contact.thumbnail!),
             fit: BoxFit.cover,
@@ -300,25 +279,15 @@ class _ContactDetailsScreenState extends State<ContactDetailsScreen> {
       );
     }
 
-    return Container(
-      width: 88.0,
-      height: 88.0,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF242424), Color(0xFF141414)],
-        ),
-        border: Border.all(color: const Color(0x35FFFFFF), width: 1.5),
-      ),
+    return LiquidDroplet(
+      size: 88.0,
       child: Center(
         child: Text(
           contact.initials,
           style: const TextStyle(
             fontSize: 30.0,
             fontWeight: FontWeight.w700,
-            color: GlassColors.textPrimary,
+            color: LiquidColors.textPrimary,
           ),
         ),
       ),

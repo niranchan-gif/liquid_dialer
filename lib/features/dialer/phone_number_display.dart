@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/glass_styles.dart';
+import '../../core/theme/liquid_theme.dart';
 import '../../shared/widgets/glass_icon_button.dart';
+import '../../shared/widgets/liquid_surface.dart';
 import '../contacts/utils/phone_number_matcher.dart';
 import 'dialer_controller.dart';
 
 /// Premium AMOLED phone-number display with live contact matching,
-/// suggestion chips, centered typography, and dedicated backspace control.
+/// pure water-droplet suggestion chips, centered typography, and dedicated backspace control.
 class PhoneNumberDisplay extends StatelessWidget {
   const PhoneNumberDisplay({
     super.key,
@@ -86,8 +87,8 @@ class PhoneNumberDisplay extends StatelessWidget {
                                   : FontWeight.w400,
                               letterSpacing: hasNumber ? 1.4 : 0.5,
                               color: hasNumber
-                                  ? GlassColors.textPrimary
-                                  : GlassColors.textMuted.withValues(
+                                  ? LiquidColors.textPrimary
+                                  : LiquidColors.textMuted.withValues(
                                       alpha: 0.55,
                                     ),
                             ),
@@ -110,7 +111,7 @@ class PhoneNumberDisplay extends StatelessWidget {
                           icon: Icons.backspace_outlined,
                           size: 42.0,
                           iconSize: 20.0,
-                          iconColor: GlassColors.textSecondary,
+                          iconColor: LiquidColors.textSecondary,
                           tooltip: 'Delete',
                           semanticLabel: 'Delete one digit, hold to clear all',
                           onTap: () => controller.deleteDigit(),
@@ -144,24 +145,18 @@ class PhoneNumberDisplay extends StatelessWidget {
     }
 
     if (primaryMatch != null) {
-      return Container(
+      return LiquidSurface(
         key: ValueKey<String>('match_${primaryMatch.contact.id}'),
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-        decoration: BoxDecoration(
-          color: GlassColors.surfaceMid.withValues(alpha: 0.65),
-          borderRadius: BorderRadius.circular(16.0),
-          border: Border.all(
-            color: GlassColors.borderSubtle.withValues(alpha: 0.5),
-            width: 1.0,
-          ),
-        ),
+        level: LiquidSurfaceLevel.card,
+        borderRadius: BorderRadius.circular(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.person_rounded,
               size: 15.0,
-              color: GlassColors.silverAccent.withValues(alpha: 0.85),
+              color: LiquidColors.silverHighlight.withValues(alpha: 0.85),
             ),
             const SizedBox(width: 6.0),
             Flexible(
@@ -170,7 +165,7 @@ class PhoneNumberDisplay extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  color: GlassColors.textPrimary,
+                  color: LiquidColors.textPrimary,
                   fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.2,
@@ -181,7 +176,7 @@ class PhoneNumberDisplay extends StatelessWidget {
             Text(
               primaryMatch.phoneNumber,
               style: const TextStyle(
-                color: GlassColors.textSecondary,
+                color: LiquidColors.textSecondary,
                 fontSize: 11.5,
                 fontWeight: FontWeight.w400,
               ),
@@ -194,17 +189,17 @@ class PhoneNumberDisplay extends StatelessWidget {
                   vertical: 1.5,
                 ),
                 decoration: BoxDecoration(
-                  color: GlassColors.cardFill,
+                  color: LiquidColors.surfaceElevated,
                   borderRadius: BorderRadius.circular(10.0),
                   border: Border.all(
-                    color: GlassColors.borderLight,
+                    color: LiquidColors.specularMeniscus.withValues(alpha: 0.3),
                     width: 0.8,
                   ),
                 ),
                 child: Text(
                   '+${suggestionsCount - 1}',
                   style: const TextStyle(
-                    color: GlassColors.silverHighlight,
+                    color: LiquidColors.silverHighlight,
                     fontSize: 10.0,
                     fontWeight: FontWeight.w600,
                   ),
@@ -227,7 +222,7 @@ class PhoneNumberDisplay extends StatelessWidget {
           Icon(
             Icons.help_outline_rounded,
             size: 13.0,
-            color: GlassColors.textMuted.withValues(alpha: 0.7),
+            color: LiquidColors.textMuted.withValues(alpha: 0.7),
           ),
           const SizedBox(width: 5.0),
           Text(
@@ -235,7 +230,7 @@ class PhoneNumberDisplay extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: GlassColors.textSecondary,
+              color: LiquidColors.textSecondary,
               fontSize: 12.0,
               fontWeight: FontWeight.w500,
               letterSpacing: 0.3,
@@ -268,13 +263,13 @@ class PhoneNumberDisplay extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? GlassColors.cardFill
-                    : GlassColors.surfaceDark.withValues(alpha: 0.8),
+                    ? LiquidColors.surfaceElevated
+                    : LiquidColors.surfaceDark.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(12.0),
                 border: Border.all(
                   color: isSelected
-                      ? GlassColors.silverSubtle.withValues(alpha: 0.6)
-                      : GlassColors.borderSubtle,
+                      ? LiquidColors.silverHighlight.withValues(alpha: 0.6)
+                      : LiquidColors.borderSubtle,
                   width: 0.9,
                 ),
               ),
@@ -285,8 +280,8 @@ class PhoneNumberDisplay extends StatelessWidget {
                     match.displayName,
                     style: TextStyle(
                       color: isSelected
-                          ? GlassColors.textPrimary
-                          : GlassColors.textSecondary,
+                          ? LiquidColors.textPrimary
+                          : LiquidColors.textSecondary,
                       fontSize: 11.0,
                       fontWeight: isSelected
                           ? FontWeight.w600
@@ -296,8 +291,8 @@ class PhoneNumberDisplay extends StatelessWidget {
                   const SizedBox(width: 4.0),
                   Text(
                     match.phoneNumber,
-                    style: TextStyle(
-                      color: GlassColors.textMuted,
+                    style: const TextStyle(
+                      color: LiquidColors.textMuted,
                       fontSize: 10.0,
                     ),
                   ),

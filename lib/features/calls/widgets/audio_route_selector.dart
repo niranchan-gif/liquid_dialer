@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/glass_styles.dart';
-import '../../../shared/widgets/glass_panel.dart';
+import '../../../core/theme/liquid_theme.dart';
+import '../../../shared/widgets/liquid_surface.dart';
 import '../models/audio_route.dart';
 
-/// Modal bottom sheet allowing selection between Telecom-supported audio routes.
+/// Modal bottom sheet allowing selection between Telecom-supported audio routes
+/// with pure liquid surface styling and silver highlights.
 class AudioRouteSelector extends StatelessWidget {
   const AudioRouteSelector({
     super.key,
@@ -47,9 +48,22 @@ class AudioRouteSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: GlassColors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+      decoration: BoxDecoration(
+        color: LiquidColors.surfaceElevated,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28.0)),
+        border: Border(
+          top: BorderSide(
+            color: LiquidColors.specularMeniscus.withValues(alpha: 0.5),
+            width: 1.2,
+          ),
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x80000000),
+            blurRadius: 24.0,
+            offset: Offset(0, -6),
+          ),
+        ],
       ),
       padding: EdgeInsets.only(
         left: 20.0,
@@ -67,7 +81,7 @@ class AudioRouteSelector extends StatelessWidget {
               width: 36.0,
               height: 4.0,
               decoration: BoxDecoration(
-                color: GlassColors.borderLight,
+                color: LiquidColors.specularMeniscus.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(2.0),
               ),
             ),
@@ -80,7 +94,7 @@ class AudioRouteSelector extends StatelessWidget {
               fontSize: 12.0,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
-              color: GlassColors.textMuted,
+              color: LiquidColors.textMuted,
             ),
           ),
           const SizedBox(height: 12.0),
@@ -95,25 +109,20 @@ class AudioRouteSelector extends StatelessWidget {
                     onSelectRoute(route);
                     Navigator.of(context).pop();
                   },
-                  child: GlassPanel(
+                  child: LiquidSurface(
+                    level: isSelected
+                        ? LiquidSurfaceLevel.elevated
+                        : LiquidSurfaceLevel.card,
+                    borderRadius: BorderRadius.circular(16.0),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16.0,
                       vertical: 14.0,
                     ),
-                    gradient: isSelected
-                        ? LinearGradient(
-                            colors: [
-                              GlassColors.cyanAccent.withValues(alpha: 0.15),
-                              GlassColors.icyBlue.withValues(alpha: 0.08),
-                            ],
-                          )
-                        : null,
-                    border: isSelected
+                    customBorder: isSelected
                         ? Border.all(
-                            color: GlassColors.cyanAccent.withValues(
-                              alpha: 0.5,
+                            color: LiquidColors.silverHighlight.withValues(
+                              alpha: 0.6,
                             ),
-                            width: 1.5,
                           )
                         : null,
                     child: Row(
@@ -121,8 +130,8 @@ class AudioRouteSelector extends StatelessWidget {
                         Icon(
                           _iconForRoute(route),
                           color: isSelected
-                              ? GlassColors.cyanAccent
-                              : GlassColors.textSecondary,
+                              ? LiquidColors.silverHighlight
+                              : LiquidColors.textSecondary,
                           size: 22.0,
                         ),
                         const SizedBox(width: 14.0),
@@ -135,15 +144,15 @@ class AudioRouteSelector extends StatelessWidget {
                                   ? FontWeight.w600
                                   : FontWeight.w500,
                               color: isSelected
-                                  ? GlassColors.textPrimary
-                                  : GlassColors.textSecondary,
+                                  ? LiquidColors.textPrimary
+                                  : LiquidColors.textSecondary,
                             ),
                           ),
                         ),
                         if (isSelected)
                           const Icon(
                             Icons.check_circle_rounded,
-                            color: GlassColors.cyanAccent,
+                            color: LiquidColors.silverHighlight,
                             size: 20.0,
                           ),
                       ],

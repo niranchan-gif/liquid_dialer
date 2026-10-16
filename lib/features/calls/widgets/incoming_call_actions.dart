@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/glass_styles.dart';
+import '../../../shared/widgets/liquid_button.dart';
+import '../../../shared/widgets/liquid_loading_indicator.dart';
 
 /// Interactive Liquid Glass Answer and Decline action buttons for incoming calls.
 class IncomingCallActions extends StatefulWidget {
@@ -135,6 +137,7 @@ class _CallCircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isAnswer = label.toLowerCase().contains('answer');
     return Semantics(
       button: true,
       label: label,
@@ -142,42 +145,19 @@ class _CallCircleButton extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          GestureDetector(
+          LiquidButton(
+            isCircle: true,
+            height: 72.0,
+            theme: isAnswer
+                ? LiquidButtonTheme.callGreen
+                : LiquidButtonTheme.callRed,
             onTap: isDisabled ? null : onTap,
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              width: 72.0,
-              height: 72.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: gradient,
-                border: Border.all(color: borderColor, width: 1.2),
-                boxShadow: [
-                  BoxShadow(
-                    color: glowColor,
-                    blurRadius: 20.0,
-                    spreadRadius: 1.5,
-                  ),
-                  const BoxShadow(
-                    color: Color(0x70000000),
-                    blurRadius: 12.0,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: isLoading
-                    ? const SizedBox(
-                        width: 26.0,
-                        height: 26.0,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.2,
-                          color: Color(0xFFF4F4F4),
-                        ),
-                      )
-                    : Icon(icon, color: iconColor, size: 30.0),
-              ),
-            ),
+            child: isLoading
+                ? const LiquidLoadingIndicator(
+                    size: 24.0,
+                    color: Color(0xFFF4F4F4),
+                  )
+                : Icon(icon, color: iconColor, size: 30.0),
           ),
           const SizedBox(height: 12.0),
           Text(

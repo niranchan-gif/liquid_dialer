@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/permissions/phone_permissions_service.dart';
-import '../../../core/theme/glass_styles.dart';
-import '../../../shared/widgets/glass_panel.dart';
+import '../../../core/theme/liquid_theme.dart';
+import '../../../shared/widgets/liquid_button.dart';
+import '../../../shared/widgets/liquid_droplet.dart';
+import '../../../shared/widgets/liquid_surface.dart';
 
-/// Explanatory Liquid Glass card requesting device contact access.
+/// Explanatory Pure Liquid card requesting device contact access.
 class ContactPermissionPanel extends StatelessWidget {
   const ContactPermissionPanel({
     super.key,
@@ -22,27 +24,23 @@ class ContactPermissionPanel extends StatelessWidget {
     final isPermanent = status.isPermanentlyDenied;
 
     return Center(
-      child: GlassPanel(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: LiquidSurface(
+        level: LiquidSurfaceLevel.card,
+        margin: const EdgeInsets.symmetric(horizontal: 20.0),
         padding: const EdgeInsets.all(28.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 64.0,
-              height: 64.0,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: GlassColors.softViolet.withValues(alpha: 0.15),
-                border: Border.all(
-                  color: GlassColors.softViolet.withValues(alpha: 0.35),
-                  width: 1.2,
-                ),
-              ),
+            LiquidDroplet(
+              size: 64.0,
+              surfaceColor: const Color(0xFF222222),
+              bottomColor: const Color(0xFF101010),
+              borderColor: const Color(0x35FFFFFF),
+              glowColor: const Color(0x20FFFFFF),
               child: const Icon(
                 Icons.contacts_rounded,
-                size: 32.0,
-                color: GlassColors.softViolet,
+                size: 30.0,
+                color: LiquidColors.silverPrimary,
               ),
             ),
             const SizedBox(height: 20.0),
@@ -52,7 +50,8 @@ class ContactPermissionPanel extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.w600,
-                color: GlassColors.textPrimary,
+                color: LiquidColors.textPrimary,
+                letterSpacing: 0.2,
               ),
             ),
             const SizedBox(height: 10.0),
@@ -63,64 +62,24 @@ class ContactPermissionPanel extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 14.0,
-                color: GlassColors.textSecondary,
-                height: 1.4,
+                color: LiquidColors.textSecondary,
+                height: 1.45,
               ),
             ),
             const SizedBox(height: 24.0),
-            GestureDetector(
+            LiquidButton(
               key: Key(
                 isPermanent
                     ? 'contactsOpenSettingsButton'
                     : 'contactsGrantAccessButton',
               ),
+              height: 48.0,
+              theme: LiquidButtonTheme.graphite,
               onTap: isPermanent ? onOpenSettings : onRequestPermission,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: 12.0,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16.0),
-                  gradient: const LinearGradient(
-                    colors: [GlassColors.icyBlue, GlassColors.deepViolet],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: GlassColors.icyBlue.withValues(alpha: 0.3),
-                      blurRadius: 16.0,
-                      spreadRadius: -2.0,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      isPermanent
-                          ? Icons.settings_rounded
-                          : Icons.lock_open_rounded,
-                      size: 18.0,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 8.0),
-                    Flexible(
-                      child: Text(
-                        isPermanent ? 'Open Settings' : 'Grant Contact Access',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              icon: isPermanent
+                  ? Icons.settings_rounded
+                  : Icons.lock_open_rounded,
+              label: isPermanent ? 'Open Settings' : 'Grant Contact Access',
             ),
           ],
         ),

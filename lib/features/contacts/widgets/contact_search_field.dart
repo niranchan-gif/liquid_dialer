@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import '../../../core/theme/glass_styles.dart';
+import '../../../core/theme/liquid_theme.dart';
 
-/// Polished Liquid Glass search field for filtering contacts.
+/// Pure Liquid search field with specular water meniscus and clear action for filtering contacts.
 class ContactSearchField extends StatelessWidget {
   const ContactSearchField({
     super.key,
@@ -22,63 +23,84 @@ class ContactSearchField extends StatelessWidget {
     return Container(
       height: 48.0,
       decoration: BoxDecoration(
-        color: GlassColors.glassFillLight,
+        color: const Color(0xFF101010),
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: GlassColors.borderSubtle, width: 1.0),
+        border: Border.all(color: LiquidColors.borderMedium, width: 1.0),
+        boxShadow: LiquidDecorations.subtleDepth,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 14.0),
-      child: Row(
+      child: Stack(
         children: [
-          const Icon(
-            Icons.search_rounded,
-            size: 20.0,
-            color: GlassColors.icyBlue,
-          ),
-          const SizedBox(width: 10.0),
-          Expanded(
-            child: TextField(
-              key: const Key('contactSearchInput'),
-              controller: controller,
-              onChanged: onChanged,
-              style: const TextStyle(
-                fontSize: 15.0,
-                color: GlassColors.textPrimary,
-                fontWeight: FontWeight.w400,
-              ),
-              cursorColor: GlassColors.cyanAccent,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: TextStyle(
-                  fontSize: 14.0,
-                  color: GlassColors.textMuted.withValues(alpha: 0.8),
-                ),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
-              ),
+          // Top specular meniscus light
+          Positioned(
+            top: 0,
+            left: 14.0,
+            right: 14.0,
+            height: 1.2,
+            child: Container(
+              decoration: LiquidDecorations.meniscusDecoration(opacity: 0.45),
             ),
           ),
-          if (controller.text.isNotEmpty)
-            GestureDetector(
-              key: const Key('contactSearchClearButton'),
-              onTap: () {
-                controller.clear();
-                onClear();
-              },
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                padding: const EdgeInsets.all(4.0),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: GlassColors.glassFillLight,
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14.0),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.search_rounded,
+                  size: 20.0,
+                  color: LiquidColors.silverSecondary,
                 ),
-                child: const Icon(
-                  Icons.close_rounded,
-                  size: 16.0,
-                  color: GlassColors.textSecondary,
+                const SizedBox(width: 10.0),
+                Expanded(
+                  child: TextField(
+                    key: const Key('contactSearchInput'),
+                    controller: controller,
+                    onChanged: onChanged,
+                    style: const TextStyle(
+                      fontSize: 15.0,
+                      color: LiquidColors.textPrimary,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    cursorColor: LiquidColors.silverPrimary,
+                    decoration: InputDecoration(
+                      hintText: hintText,
+                      hintStyle: TextStyle(
+                        fontSize: 14.0,
+                        color: LiquidColors.textMuted.withValues(alpha: 0.8),
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12.0,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                if (controller.text.isNotEmpty)
+                  GestureDetector(
+                    key: const Key('contactSearchClearButton'),
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      controller.clear();
+                      onClear();
+                    },
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      padding: const EdgeInsets.all(4.0),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF202020),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        size: 16.0,
+                        color: LiquidColors.textSecondary,
+                      ),
+                    ),
+                  ),
+              ],
             ),
+          ),
         ],
       ),
     );
