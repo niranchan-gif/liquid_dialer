@@ -58,6 +58,17 @@ class MainShellScreen extends StatefulWidget {
   State<MainShellScreen> createState() => _MainShellScreenState();
 }
 
+class _CallControllerCallService implements CallService {
+  const _CallControllerCallService(this.controller);
+  final CallController controller;
+
+  @override
+  Future<String> placeCall(String phoneNumber) async {
+    final result = await controller.placeCall(phoneNumber);
+    return result.message;
+  }
+}
+
 class _MainShellScreenState extends State<MainShellScreen> {
   late int _currentIndex;
   late final DialerController _dialerController;
@@ -70,7 +81,6 @@ class _MainShellScreenState extends State<MainShellScreen> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
-    _dialerController = DialerController(callService: widget.callService);
 
     if (widget.callController != null) {
       _callController = widget.callController!;
@@ -78,6 +88,11 @@ class _MainShellScreenState extends State<MainShellScreen> {
       _callController = CallController();
       _ownsCallController = true;
     }
+
+    _dialerController = DialerController(
+      callService:
+          widget.callService ?? _CallControllerCallService(_callController),
+    );
 
     _listenForDialIntents();
   }
@@ -123,53 +138,72 @@ class _MainShellScreenState extends State<MainShellScreen> {
       builder: (context, _) {
         final call = _callController.primaryCall;
 
+        Widget currentView;
+
         // If an incoming call is ringing, display full-screen IncomingCallScreen
         if (call != null && call.state.isIncoming) {
-          return IncomingCallScreen(session: call, controller: _callController);
-        }
-
-        // If a call is active, connecting, on hold, or terminating, display ActiveCallScreen
-        if (call != null &&
+          currentView = KeyedSubtree(
+            key: const ValueKey('incomingCallView'),
+            child: IncomingCallScreen(
+              session: call,
+              controller: _callController,
+            ),
+          );
+        } else if (call != null &&
             (call.state.isActive ||
                 call.state.isConnecting ||
                 call.state.isHolding ||
                 call.state.isTerminal)) {
-          return ActiveCallScreen(
-            session: call,
-            controller: _callController,
-            onDismiss: () => _callController.refreshCallSnapshot(),
+          // If a call is active, connecting, on hold, or terminating, display ActiveCallScreen
+          currentView = KeyedSubtree(
+            key: const ValueKey('activeCallView'),
+            child: ActiveCallScreen(
+              session: call,
+              controller: _callController,
+              onDismiss: () => _callController.refreshCallSnapshot(),
+            ),
+          );
+        } else {
+          // Default shell with persistent tab navigation
+          currentView = KeyedSubtree(
+            key: const ValueKey('mainShellView'),
+            child: Scaffold(
+              backgroundColor: GlassColors.background,
+              extendBody: false,
+              body: IndexedStack(
+                index: _currentIndex,
+                children: [
+                  RecentsScreen(
+                    onSelectNumber: (number) {
+                      _dialerController.setNumber(number);
+                      _onTabSelected(1);
+                    },
+                  ),
+                  DialerScreen(
+                    controller: _dialerController,
+                    onNavigateToContacts: () => _onTabSelected(2),
+                  ),
+                  ContactsScreen(
+                    onSelectNumber: (number) {
+                      _dialerController.setNumber(number);
+                      _onTabSelected(1);
+                    },
+                  ),
+                ],
+              ),
+              bottomNavigationBar: GlassBottomNavigation(
+                currentIndex: _currentIndex,
+                onTap: _onTabSelected,
+              ),
+            ),
           );
         }
 
-        // Default shell with persistent tab navigation
-        return Scaffold(
-          backgroundColor: GlassColors.background,
-          extendBody: false,
-          body: IndexedStack(
-            index: _currentIndex,
-            children: [
-              RecentsScreen(
-                onSelectNumber: (number) {
-                  _dialerController.setNumber(number);
-                  _onTabSelected(1);
-                },
-              ),
-              DialerScreen(
-                controller: _dialerController,
-                onNavigateToContacts: () => _onTabSelected(2),
-              ),
-              ContactsScreen(
-                onSelectNumber: (number) {
-                  _dialerController.setNumber(number);
-                  _onTabSelected(1);
-                },
-              ),
-            ],
-          ),
-          bottomNavigationBar: GlassBottomNavigation(
-            currentIndex: _currentIndex,
-            onTap: _onTabSelected,
-          ),
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 240),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          child: currentView,
         );
       },
     );

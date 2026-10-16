@@ -9,9 +9,9 @@ import '../widgets/incoming_call_actions.dart';
 
 /// Full-screen Liquid Glass incoming-call screen for OnePlus Nord 4.
 ///
-/// Features deep AMOLED black aesthetics, specular halo lighting, contact details,
-/// and responsive Answer/Decline controls wired to native Android Telecom.
-class IncomingCallScreen extends StatelessWidget {
+/// Features deep AMOLED black aesthetics (#000000), subtle silver liquid breathing halo,
+/// prominent caller identity, and responsive Answer/Decline controls wired to native Android Telecom.
+class IncomingCallScreen extends StatefulWidget {
   const IncomingCallScreen({
     super.key,
     required this.session,
@@ -22,28 +22,58 @@ class IncomingCallScreen extends StatelessWidget {
   final CallController controller;
 
   @override
+  State<IncomingCallScreen> createState() => _IncomingCallScreenState();
+}
+
+class _IncomingCallScreenState extends State<IncomingCallScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _haloController;
+  late final Animation<double> _haloScale;
+  late final Animation<double> _haloOpacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _haloController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    )..repeat(reverse: true);
+
+    _haloScale = Tween<double>(begin: 1.0, end: 1.12).animate(
+      CurvedAnimation(parent: _haloController, curve: Curves.easeInOutSine),
+    );
+
+    _haloOpacity = Tween<double>(begin: 0.35, end: 0.85).animate(
+      CurvedAnimation(parent: _haloController, curve: Curves.easeInOutSine),
+    );
+  }
+
+  @override
+  void dispose() {
+    _haloController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
+    final disableAnimations =
+        MediaQuery.maybeDisableAnimationsOf(context) ?? false;
 
     return Scaffold(
       backgroundColor: GlassColors.background,
       body: Stack(
         children: [
-          // Ambient cyan & violet background glows
+          // Subtle restrained silver ambient glow in background
           Positioned(
-            top: mediaQuery.size.height * 0.15,
-            left: mediaQuery.size.width * 0.5 - 130,
+            top: MediaQuery.of(context).size.height * 0.16,
+            left: MediaQuery.of(context).size.width * 0.5 - 130,
             child: Container(
               width: 260.0,
               height: 260.0,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [
-                    GlassColors.cyanAccent.withValues(alpha: 0.18),
-                    GlassColors.softViolet.withValues(alpha: 0.08),
-                    Colors.transparent,
-                  ],
+                  colors: [Color(0x0AFFFFFF), Colors.transparent],
                 ),
               ),
             ),
@@ -51,63 +81,100 @@ class IncomingCallScreen extends StatelessWidget {
 
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: const EdgeInsets.symmetric(horizontal: 28.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 28.0),
 
-                  // Status indicator pill
+                  // Call state indicator pill
                   const CallStatusIndicator(state: CallState.incoming),
 
                   const Spacer(flex: 2),
 
-                  // Glowing Avatar Halo & Monogram
-                  Container(
-                    width: 130.0,
-                    height: 130.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          GlassColors.cyanAccent.withValues(alpha: 0.25),
-                          GlassColors.deepViolet.withValues(alpha: 0.15),
+                  // Avatar with gentle breathing silver liquid halo
+                  AnimatedBuilder(
+                    animation: _haloController,
+                    builder: (context, child) {
+                      final scale = disableAnimations ? 1.0 : _haloScale.value;
+                      final opacity = disableAnimations
+                          ? 0.4
+                          : _haloOpacity.value;
+
+                      return Container(
+                        width: 150.0,
+                        height: 150.0,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Color.fromRGBO(
+                              226,
+                              232,
+                              240,
+                              0.15 * opacity,
+                            ),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(
+                                255,
+                                255,
+                                255,
+                                0.08 * opacity,
+                              ),
+                              blurRadius: 36.0 * scale,
+                              spreadRadius: 2.0 * scale,
+                            ),
+                          ],
+                        ),
+                        child: child,
+                      );
+                    },
+                    child: Container(
+                      width: 124.0,
+                      height: 124.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF1C1C1C), Color(0xFF0F0F0F)],
+                        ),
+                        border: Border.all(
+                          color: const Color(0x35FFFFFF),
+                          width: 1.2,
+                        ),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x80000000),
+                            blurRadius: 24.0,
+                            offset: Offset(0, 8),
+                          ),
                         ],
                       ),
-                      border: Border.all(
-                        color: GlassColors.cyanAccent.withValues(alpha: 0.4),
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: GlassColors.cyanAccent.withValues(alpha: 0.2),
-                          blurRadius: 32.0,
-                          spreadRadius: 2.0,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        session.initials,
-                        style: const TextStyle(
-                          fontSize: 48.0,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.0,
-                          color: GlassColors.textPrimary,
+                      child: Center(
+                        child: Text(
+                          widget.session.initials,
+                          style: const TextStyle(
+                            fontSize: 44.0,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.0,
+                            color: GlassColors.textPrimary,
+                          ),
                         ),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 28.0),
+                  const SizedBox(height: 32.0),
 
-                  // Caller Name
+                  // Caller Name with generous breathing room
                   Text(
-                    session.effectiveName,
+                    widget.session.effectiveName,
                     style: const TextStyle(
-                      fontSize: 28.0,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.w600,
                       letterSpacing: -0.5,
                       color: GlassColors.textPrimary,
                     ),
@@ -116,16 +183,16 @@ class IncomingCallScreen extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
 
-                  if (session.hasCallerName &&
-                      session.phoneNumber.isNotEmpty) ...[
+                  if (widget.session.hasCallerName &&
+                      widget.session.phoneNumber.isNotEmpty) ...[
                     const SizedBox(height: 8.0),
                     Text(
-                      session.phoneNumber,
+                      widget.session.phoneNumber,
                       style: const TextStyle(
                         fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
                         color: GlassColors.textSecondary,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.6,
                       ),
                     ),
                   ],
@@ -134,20 +201,22 @@ class IncomingCallScreen extends StatelessWidget {
 
                   // Answer & Decline Actions
                   ListenableBuilder(
-                    listenable: controller,
+                    listenable: widget.controller,
                     builder: (context, _) {
                       return IncomingCallActions(
-                        isAnswering: controller.isAnswering,
-                        isRejecting: controller.isRejecting,
-                        onAnswer: () =>
-                            controller.answerCall(session.sessionId),
-                        onReject: () =>
-                            controller.rejectCall(session.sessionId),
+                        isAnswering: widget.controller.isAnswering,
+                        isRejecting: widget.controller.isRejecting,
+                        onAnswer: () => widget.controller.answerCall(
+                          widget.session.sessionId,
+                        ),
+                        onReject: () => widget.controller.rejectCall(
+                          widget.session.sessionId,
+                        ),
                       );
                     },
                   ),
 
-                  const SizedBox(height: 48.0),
+                  const SizedBox(height: 52.0),
                 ],
               ),
             ),

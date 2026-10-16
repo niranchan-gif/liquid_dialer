@@ -58,114 +58,116 @@ class DialerScreen extends StatelessWidget {
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                return SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: IntrinsicHeight(
-                      child: Column(
+                final content = Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 6.0,
+                      ),
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Header
-                          Padding(
+                          // Contacts shortcut
+                          GlassIconButton(
+                            key: const Key('headerContactsButton'),
+                            icon: Icons.person_search_rounded,
+                            tooltip: 'Contacts',
+                            iconColor: GlassColors.textSecondary,
+                            onTap: onNavigateToContacts,
+                          ),
+
+                          // Configurable app title badge
+                          Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0,
+                              horizontal: 14.0,
                               vertical: 6.0,
                             ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                              color: GlassColors.glassFillUltraLight,
+                              border: Border.all(
+                                color: GlassColors.borderSubtle,
+                                width: 1.0,
+                              ),
+                            ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Contacts shortcut
-                                GlassIconButton(
-                                  key: const Key('headerContactsButton'),
-                                  icon: Icons.person_search_rounded,
-                                  tooltip: 'Contacts',
-                                  iconColor: GlassColors.textSecondary,
-                                  onTap: onNavigateToContacts,
-                                ),
-
-                                // Configurable app title badge
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14.0,
-                                    vertical: 6.0,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    color: GlassColors.glassFillUltraLight,
-                                    border: Border.all(
-                                      color: GlassColors.borderSubtle,
-                                      width: 1.0,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        width: 7.0,
-                                        height: 7.0,
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: GlassColors.silverAccent,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Color(0x33FFFFFF),
-                                              blurRadius: 6.0,
-                                              spreadRadius: 0.5,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8.0),
-                                      const Text(
-                                        AppTheme.appShortName,
-                                        style: TextStyle(
-                                          fontSize: 12.0,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 2.2,
-                                          color: GlassColors.textPrimary,
-                                        ),
+                                  width: 7.0,
+                                  height: 7.0,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: GlassColors.silverAccent,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Color(0x33FFFFFF),
+                                        blurRadius: 6.0,
+                                        spreadRadius: 0.5,
                                       ),
                                     ],
                                   ),
                                 ),
-
-                                // Settings shortcut
-                                GlassIconButton(
-                                  key: const Key('headerSettingsButton'),
-                                  icon: Icons.tune_rounded,
-                                  tooltip: 'Settings',
-                                  iconColor: GlassColors.textSecondary,
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const SettingsScreen(),
-                                      ),
-                                    );
-                                  },
+                                const SizedBox(width: 8.0),
+                                const Text(
+                                  AppTheme.appShortName,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 2.2,
+                                    color: GlassColors.textPrimary,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
 
-                          const SizedBox(height: 6.0),
-
-                          // Phone number display
-                          PhoneNumberDisplay(controller: controller),
-
-                          const SizedBox(height: 6.0),
-
-                          // Keypad with digits and mint call action
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: DialerKeypad(controller: controller),
+                          // Settings shortcut
+                          GlassIconButton(
+                            key: const Key('headerSettingsButton'),
+                            icon: Icons.tune_rounded,
+                            tooltip: 'Settings',
+                            iconColor: GlassColors.textSecondary,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const SettingsScreen(),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
                     ),
-                  ),
+
+                    const SizedBox(height: 6.0),
+
+                    // Phone number display
+                    PhoneNumberDisplay(controller: controller),
+
+                    const SizedBox(height: 6.0),
+
+                    // Keypad with digits and call action
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: DialerKeypad(controller: controller),
+                    ),
+                  ],
+                );
+
+                if (constraints.maxHeight >= 540) {
+                  return SizedBox(
+                    height: constraints.maxHeight,
+                    child: content,
+                  );
+                }
+
+                return SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: content,
                 );
               },
             ),

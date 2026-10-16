@@ -60,7 +60,7 @@ class ActiveCallControls extends StatelessWidget {
               icon: Icons.dialpad_rounded,
               label: 'Keypad',
               isActive: isKeypadVisible,
-              activeColor: GlassColors.cyanAccent,
+              activeColor: GlassColors.silverAccent,
               onTap: () {
                 HapticFeedback.lightImpact();
                 onToggleKeypad?.call();
@@ -73,7 +73,7 @@ class ActiveCallControls extends StatelessWidget {
               icon: _iconForRoute(audioState.currentRoute),
               label: audioState.isSpeakerOn ? 'Speaker' : 'Audio',
               isActive: audioState.isSpeakerOn,
-              activeColor: GlassColors.icyBlue,
+              activeColor: GlassColors.silverAccent,
               onTap: () {
                 HapticFeedback.lightImpact();
                 if (audioState.supportedRoutes.length > 2) {
@@ -105,7 +105,7 @@ class ActiveCallControls extends StatelessWidget {
               icon: isHolding ? Icons.play_arrow_rounded : Icons.pause_rounded,
               label: isHolding ? 'Resume' : 'Hold',
               isActive: isHolding,
-              activeColor: GlassColors.softViolet,
+              activeColor: GlassColors.silverHighlight,
               onTap: () {
                 HapticFeedback.lightImpact();
                 onToggleHold();
@@ -159,35 +159,41 @@ class ActiveCallControls extends StatelessWidget {
             child: Container(
               width: 72.0,
               height: 72.0,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                  colors: [Color(0xFF381F1F), Color(0xFF241313)],
                 ),
-                boxShadow: [
+                border: Border.all(color: const Color(0x60F87171), width: 1.2),
+                boxShadow: const [
                   BoxShadow(
-                    color: Color(0x66EF4444),
-                    blurRadius: 24.0,
-                    spreadRadius: 2.0,
+                    color: Color(0x28EF4444),
+                    blurRadius: 20.0,
+                    spreadRadius: 1.5,
+                  ),
+                  BoxShadow(
+                    color: Color(0x70000000),
+                    blurRadius: 12.0,
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
               child: Center(
                 child: isEnding
                     ? const SizedBox(
-                        width: 28.0,
-                        height: 28.0,
+                        width: 26.0,
+                        height: 26.0,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: Colors.white,
+                          strokeWidth: 2.2,
+                          color: Color(0xFFF4F4F4),
                         ),
                       )
                     : const Icon(
                         Icons.call_end_rounded,
-                        color: Colors.white,
-                        size: 32.0,
+                        color: Color(0xFFF4F4F4),
+                        size: 30.0,
                       ),
               ),
             ),
@@ -218,7 +224,7 @@ class _ControlGridButton extends StatelessWidget {
     required this.label,
     required this.isActive,
     required this.onTap,
-    this.activeColor = GlassColors.cyanAccent,
+    this.activeColor = GlassColors.silverAccent,
     this.isDisabled = false,
   });
 
@@ -247,18 +253,18 @@ class _ControlGridButton extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isActive
-                    ? activeColor.withValues(alpha: 0.2)
-                    : GlassColors.glassFillLight,
+                    ? const Color(0xFF222222)
+                    : const Color(0xFF101010),
                 border: Border.all(
                   color: isActive
-                      ? activeColor.withValues(alpha: 0.6)
+                      ? const Color(0x45FFFFFF)
                       : GlassColors.borderSubtle,
                   width: 1.2,
                 ),
                 boxShadow: isActive
                     ? [
                         BoxShadow(
-                          color: activeColor.withValues(alpha: 0.3),
+                          color: const Color(0x20FFFFFF),
                           blurRadius: 16.0,
                           spreadRadius: 1.0,
                         ),

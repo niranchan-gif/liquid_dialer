@@ -87,9 +87,9 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       decoration: BoxDecoration(
-        color: GlassColors.surfaceOverlay,
+        color: const Color(0xFF101010),
         borderRadius: BorderRadius.circular(20.0),
-        border: Border.all(color: GlassColors.borderLight),
+        border: Border.all(color: GlassColors.borderSubtle),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -106,7 +106,7 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
                     letterSpacing: 2.0,
                     color: _dtmfDigits.isEmpty
                         ? GlassColors.textMuted
-                        : GlassColors.cyanAccent,
+                        : GlassColors.silverAccent,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -154,202 +154,214 @@ class _ActiveCallScreenState extends State<ActiveCallScreen> {
       backgroundColor: GlassColors.background,
       body: Stack(
         children: [
-          // Ambient soft background glow
+          // Ambient soft restrained silver background glow
           Positioned(
             top: mediaQuery.size.height * 0.12,
             left: mediaQuery.size.width * 0.5 - 120,
             child: Container(
               width: 240.0,
               height: 240.0,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [
-                    GlassColors.icyBlue.withValues(alpha: 0.12),
-                    Colors.transparent,
-                  ],
+                  colors: [Color(0x08FFFFFF), Colors.transparent],
                 ),
               ),
             ),
           ),
 
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isCompact = constraints.maxHeight < 680;
+                final avatarSize = isCompact ? 80.0 : 100.0;
+                final avatarFontSize = isCompact ? 30.0 : 36.0;
 
-                  // Call state indicator pill
-                  CallStatusIndicator(
-                    state: widget.session.state,
-                    customText: widget.session.disconnectReason,
-                  ),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    children: [
+                      SizedBox(height: isCompact ? 10.0 : 18.0),
 
-                  if (_isDialpadVisible) ...[
-                    const SizedBox(height: 16.0),
-                    _buildDtmfDialpad(),
-                  ] else ...[
-                    const Spacer(flex: 2),
-
-                    // Caller Avatar Monogram
-                    Container(
-                      width: 96.0,
-                      height: 96.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            GlassColors.glassFillLight,
-                            GlassColors.glassFillDark,
-                          ],
-                        ),
-                        border: Border.all(
-                          color: GlassColors.borderLight,
-                          width: 1.5,
-                        ),
-                        boxShadow: GlassDecorations.subtleShadow,
+                      // Call state indicator pill
+                      CallStatusIndicator(
+                        state: widget.session.state,
+                        customText: widget.session.disconnectReason,
                       ),
-                      child: Center(
-                        child: Text(
-                          widget.session.initials,
-                          style: const TextStyle(
-                            fontSize: 34.0,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.0,
+
+                      if (_isDialpadVisible) ...[
+                        const SizedBox(height: 12.0),
+                        _buildDtmfDialpad(),
+                      ] else ...[
+                        const Spacer(flex: 1),
+
+                        // Caller Avatar Monogram
+                        Container(
+                          width: avatarSize,
+                          height: avatarSize,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Color(0xFF1C1C1C), Color(0xFF0F0F0F)],
+                            ),
+                            border: Border.all(
+                              color: const Color(0x35FFFFFF),
+                              width: 1.2,
+                            ),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x80000000),
+                                blurRadius: 20.0,
+                                offset: Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              widget.session.initials,
+                              style: TextStyle(
+                                fontSize: avatarFontSize,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.0,
+                                color: GlassColors.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: isCompact ? 12.0 : 20.0),
+
+                        // Caller Name
+                        Text(
+                          widget.session.effectiveName,
+                          style: TextStyle(
+                            fontSize: isCompact ? 24.0 : 28.0,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.5,
                             color: GlassColors.textPrimary,
                           ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ),
 
-                    const SizedBox(height: 20.0),
+                        const SizedBox(height: 4.0),
 
-                    // Caller Name
-                    Text(
-                      widget.session.effectiveName,
-                      style: const TextStyle(
-                        fontSize: 26.0,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.5,
-                        color: GlassColors.textPrimary,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    const SizedBox(height: 6.0),
-
-                    // Formatted Number or Subtitle
-                    if (widget.session.hasCallerName &&
-                        widget.session.phoneNumber.isNotEmpty) ...[
-                      Text(
-                        widget.session.phoneNumber,
-                        style: const TextStyle(
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w500,
-                          color: GlassColors.textSecondary,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
-                    ],
-                  ],
-
-                  // Elapsed Call Duration
-                  ListenableBuilder(
-                    listenable: widget.controller,
-                    builder: (context, _) {
-                      if (widget.session.state.isActive) {
-                        return Text(
-                          _formatDuration(widget.controller.elapsedDuration),
-                          style: const TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.5,
-                            color: GlassColors.mintLight,
-                            fontFeatures: [FontFeature.tabularFigures()],
+                        // Formatted Number or Subtitle
+                        if (widget.session.hasCallerName &&
+                            widget.session.phoneNumber.isNotEmpty) ...[
+                          Text(
+                            widget.session.phoneNumber,
+                            style: const TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w400,
+                              color: GlassColors.textSecondary,
+                              letterSpacing: 0.4,
+                            ),
                           ),
-                        );
-                      } else if (widget.session.state.isConnecting) {
-                        return const Text(
-                          'Calling...',
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.w500,
-                            color: GlassColors.icyBlue,
-                            letterSpacing: 0.5,
-                          ),
-                        );
-                      } else if (widget.session.state.isHolding) {
-                        return const Text(
-                          'On Hold',
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.w500,
-                            color: GlassColors.softViolet,
-                            letterSpacing: 0.5,
-                          ),
-                        );
-                      } else if (widget.session.state.isTerminal) {
-                        return Text(
-                          widget.session.disconnectReason ?? 'Call Ended',
-                          style: const TextStyle(
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.w500,
-                            color: GlassColors.danger,
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
+                          const SizedBox(height: 6.0),
+                        ],
+                      ],
 
-                  const Spacer(flex: 3),
-
-                  // Active Call Controls Matrix
-                  ListenableBuilder(
-                    listenable: widget.controller,
-                    builder: (context, _) {
-                      return ActiveCallControls(
-                        isMuted: widget.controller.audioRouteState.isMuted,
-                        isHolding: widget.session.state.isHolding,
-                        audioState: widget.controller.audioRouteState,
-                        isKeypadVisible: _isDialpadVisible,
-                        isEnding: widget.controller.isDisconnecting,
-                        onToggleMute: widget.controller.toggleMute,
-                        onToggleHold: () {
-                          if (widget.session.state.isHolding) {
-                            widget.controller.unholdCall(
-                              widget.session.sessionId,
+                      // Elapsed Call Duration
+                      ListenableBuilder(
+                        listenable: widget.controller,
+                        builder: (context, _) {
+                          if (widget.session.state.isActive) {
+                            return Text(
+                              _formatDuration(
+                                widget.controller.elapsedDuration,
+                              ),
+                              style: TextStyle(
+                                fontSize: isCompact ? 18.0 : 22.0,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.5,
+                                color: GlassColors.textPrimary,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
                             );
-                          } else {
-                            widget.controller.holdCall(
-                              widget.session.sessionId,
+                          } else if (widget.session.state.isConnecting) {
+                            return const Text(
+                              'Calling...',
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w500,
+                                color: GlassColors.silverHighlight,
+                                letterSpacing: 0.5,
+                              ),
+                            );
+                          } else if (widget.session.state.isHolding) {
+                            return const Text(
+                              'On Hold',
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w500,
+                                color: GlassColors.silverSubtle,
+                                letterSpacing: 0.5,
+                              ),
+                            );
+                          } else if (widget.session.state.isTerminal) {
+                            return Text(
+                              widget.session.disconnectReason ?? 'Call Ended',
+                              style: const TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w500,
+                                color: GlassColors.danger,
+                              ),
                             );
                           }
+                          return const SizedBox.shrink();
                         },
-                        onSelectAudioRoute: widget.controller.setAudioRoute,
-                        onToggleKeypad: () {
-                          setState(() {
-                            _isDialpadVisible = !_isDialpadVisible;
-                          });
-                        },
-                        onEndCall: () {
-                          widget.controller.disconnectCall(
-                            widget.session.sessionId,
+                      ),
+
+                      const Spacer(flex: 2),
+
+                      // Active Call Controls Matrix
+                      ListenableBuilder(
+                        listenable: widget.controller,
+                        builder: (context, _) {
+                          return ActiveCallControls(
+                            isMuted: widget.controller.audioRouteState.isMuted,
+                            isHolding: widget.session.state.isHolding,
+                            audioState: widget.controller.audioRouteState,
+                            isKeypadVisible: _isDialpadVisible,
+                            isEnding: widget.controller.isDisconnecting,
+                            onToggleMute: widget.controller.toggleMute,
+                            onToggleHold: () {
+                              if (widget.session.state.isHolding) {
+                                widget.controller.unholdCall(
+                                  widget.session.sessionId,
+                                );
+                              } else {
+                                widget.controller.holdCall(
+                                  widget.session.sessionId,
+                                );
+                              }
+                            },
+                            onSelectAudioRoute: widget.controller.setAudioRoute,
+                            onToggleKeypad: () {
+                              setState(() {
+                                _isDialpadVisible = !_isDialpadVisible;
+                              });
+                            },
+                            onEndCall: () {
+                              widget.controller.disconnectCall(
+                                widget.session.sessionId,
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                  ),
+                      ),
 
-                  const SizedBox(height: 36.0),
-                ],
-              ),
+                      SizedBox(height: isCompact ? 16.0 : 30.0),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],

@@ -36,21 +36,34 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler, EventCh
         outgoingCallManager = OutgoingCallManager(this, roleManager)
 
         IncomingCallNotificationManager.ensureNotificationChannel(this)
+        configureWindowForCalls()
 
-        // Enable display over lockscreen and screen wakeup for cellular call presentations
+        // Capture initial dial intent payload if launched via tel: URI
+        initialDialNumber = DialIntentHandler.extractPhoneNumber(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        configureWindowForCalls()
+        if (TelecomCallManager.hasActiveCalls()) {
+            sendCallUpdateEvent("resume_snapshot")
+        }
+    }
+
+    private fun configureWindowForCalls() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
+            val keyguardManager = getSystemService(KEYGUARD_SERVICE) as? android.app.KeyguardManager
+            keyguardManager?.requestDismissKeyguard(this, null)
         } else {
             @Suppress("DEPRECATION")
             window.addFlags(
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
             )
         }
-
-        // Capture initial dial intent payload if launched via tel: URI
-        initialDialNumber = DialIntentHandler.extractPhoneNumber(intent)
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -177,16 +190,15 @@ class MainActivity : FlutterActivity(), MethodChannel.MethodCallHandler, EventCh
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        configureWindowForCalls()
 
         val number = DialIntentHandler.extractPhoneNumber(intent)
         if (!number.isNullOrBlank()) {
             telecomChannel?.invokeMethod("onDialIntent", number)
         }
 
-        // Notify Flutter if launched from incoming call notification action
-        if (IncomingCallNotificationManager.ACTION_INCOMING_CALL == intent.action) {
-            sendCallUpdateEvent("incoming_intent")
-        }
+        // Always notify Flutter of current call snapshot upon new intent
+        sendCallUpdateEvent("intent_received")
     }
 
     @Deprecated("Deprecated in Java")

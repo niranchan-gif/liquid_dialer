@@ -41,14 +41,14 @@ class _CallStatusIndicatorState extends State<CallStatusIndicator>
   Color get _statusColor {
     switch (widget.state) {
       case CallState.active:
-        return GlassColors.mintLight;
+        return const Color(0xFFF4F4F4);
       case CallState.incoming:
-        return GlassColors.cyanAccent;
+        return GlassColors.silverAccent;
       case CallState.dialing:
       case CallState.connecting:
-        return GlassColors.icyBlue;
+        return GlassColors.silverHighlight;
       case CallState.holding:
-        return GlassColors.softViolet;
+        return GlassColors.silverSubtle;
       case CallState.disconnected:
       case CallState.disconnecting:
         return GlassColors.danger;

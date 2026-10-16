@@ -32,6 +32,26 @@ class CallSession {
     );
   }
 
+  CallSession copyWith({
+    String? sessionId,
+    String? phoneNumber,
+    String? displayName,
+    CallState? state,
+    CallDirection? direction,
+    int? connectTimeMillis,
+    String? disconnectReason,
+  }) {
+    return CallSession(
+      sessionId: sessionId ?? this.sessionId,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      displayName: displayName ?? this.displayName,
+      state: state ?? this.state,
+      direction: direction ?? this.direction,
+      connectTimeMillis: connectTimeMillis ?? this.connectTimeMillis,
+      disconnectReason: disconnectReason ?? this.disconnectReason,
+    );
+  }
+
   /// Returns the most descriptive contact label available.
   String get effectiveName {
     if (displayName != null && displayName!.trim().isNotEmpty) {

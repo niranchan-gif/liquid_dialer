@@ -45,19 +45,38 @@ class LiquidInCallService : InCallService() {
         val sessionId = TelecomCallManager.registerCall(call)
         callStateListener?.invoke(call.state)
 
-        // If the call is an incoming ringing call, present notification & full-screen UI
-        if (call.state == Call.STATE_RINGING) {
-            val details = call.details
-            val handle = details?.handle
-            val rawNumber = handle?.schemeSpecificPart ?: ""
-            val displayName = details?.callerDisplayName
+        val details = call.details
+        val handle = details?.handle
+        val rawNumber = handle?.schemeSpecificPart ?: ""
+        val displayName = details?.callerDisplayName
 
+        // For incoming ringing calls, present notification AND bring UI to foreground
+        if (call.state == Call.STATE_RINGING) {
             IncomingCallNotificationManager.showIncomingCallNotification(
                 this,
                 sessionId,
                 rawNumber,
                 displayName
             )
+
+            launchCallActivity(sessionId)
+        } else if (call.state == Call.STATE_DIALING || call.state == Call.STATE_CONNECTING) {
+            launchCallActivity(sessionId)
+        }
+    }
+
+    private fun launchCallActivity(sessionId: String) {
+        try {
+            val intent = Intent(this, MainActivity::class.java).apply {
+                action = IncomingCallNotificationManager.ACTION_INCOMING_CALL
+                putExtra(IncomingCallNotificationManager.EXTRA_SESSION_ID, sessionId)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                        Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            }
+            startActivity(intent)
+        } catch (_: Exception) {
+            // Handled gracefully if activity launch is restricted by OS
         }
     }
 

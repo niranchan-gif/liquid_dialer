@@ -83,9 +83,14 @@ class OutgoingCallManager(
 
         return try {
             telecomManager.placeCall(uri, extras)
+            val feedback = if (isDefaultDialer) {
+                "Outgoing call initiated."
+            } else {
+                "Outgoing call initiated. (Set Liquid Dialer as default phone for the full in-call screen)."
+            }
             OutgoingCallResult(
                 success = true,
-                message = "Outgoing call initiated.",
+                message = feedback,
                 errorCode = null
             )
         } catch (se: SecurityException) {

@@ -32,10 +32,10 @@ class _IncomingCallActionsState extends State<IncomingCallActions>
     super.initState();
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1800),
     )..repeat(reverse: true);
 
-    _pulseScale = Tween<double>(begin: 1.0, end: 1.06).animate(
+    _pulseScale = Tween<double>(begin: 1.0, end: 1.05).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
@@ -59,9 +59,12 @@ class _IncomingCallActionsState extends State<IncomingCallActions>
       gradient: const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [GlassColors.mintLight, GlassColors.mintPrimary],
+        colors: [Color(0xFF22382B), Color(0xFF14241B)],
       ),
-      glowColor: GlassColors.mintGlow,
+      borderColor: const Color(0x6034D399),
+      glowColor: const Color(0x2834D399),
+      iconColor: const Color(0xFFF4F4F4),
+      labelColor: GlassColors.textPrimary,
       isLoading: widget.isAnswering,
       isDisabled: isBusy,
       onTap: () {
@@ -81,9 +84,12 @@ class _IncomingCallActionsState extends State<IncomingCallActions>
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+            colors: [Color(0xFF381F1F), Color(0xFF241313)],
           ),
-          glowColor: const Color(0x60EF4444),
+          borderColor: const Color(0x60F87171),
+          glowColor: const Color(0x28EF4444),
+          iconColor: const Color(0xFFF4F4F4),
+          labelColor: GlassColors.textSecondary,
           isLoading: widget.isRejecting,
           isDisabled: isBusy,
           onTap: () {
@@ -107,8 +113,11 @@ class _CallCircleButton extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.gradient,
+    required this.borderColor,
     required this.glowColor,
     required this.onTap,
+    this.iconColor = Colors.white,
+    this.labelColor = GlassColors.textPrimary,
     this.isLoading = false,
     this.isDisabled = false,
   });
@@ -116,7 +125,10 @@ class _CallCircleButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final Gradient gradient;
+  final Color borderColor;
   final Color glowColor;
+  final Color iconColor;
+  final Color labelColor;
   final VoidCallback onTap;
   final bool isLoading;
   final bool isDisabled;
@@ -139,35 +151,41 @@ class _CallCircleButton extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: gradient,
+                border: Border.all(color: borderColor, width: 1.2),
                 boxShadow: [
                   BoxShadow(
                     color: glowColor,
                     blurRadius: 20.0,
-                    spreadRadius: 2.0,
+                    spreadRadius: 1.5,
+                  ),
+                  const BoxShadow(
+                    color: Color(0x70000000),
+                    blurRadius: 12.0,
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
               child: Center(
                 child: isLoading
                     ? const SizedBox(
-                        width: 28.0,
-                        height: 28.0,
+                        width: 26.0,
+                        height: 26.0,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: Colors.white,
+                          strokeWidth: 2.2,
+                          color: Color(0xFFF4F4F4),
                         ),
                       )
-                    : Icon(icon, color: Colors.white, size: 32.0),
+                    : Icon(icon, color: iconColor, size: 30.0),
               ),
             ),
           ),
           const SizedBox(height: 12.0),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14.0,
               fontWeight: FontWeight.w600,
-              color: GlassColors.textPrimary,
+              color: labelColor,
               letterSpacing: 0.3,
             ),
           ),

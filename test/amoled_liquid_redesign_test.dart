@@ -265,8 +265,9 @@ void main() {
       expect(GlassColors.background, const Color(0xFF000000));
       expect(GlassColors.surfaceDark, const Color(0xFF090909));
       expect(GlassColors.surfaceMid, const Color(0xFF101010));
-      expect(GlassColors.textPrimary, const Color(0xFFF5F5F5));
-      expect(GlassColors.textSecondary, const Color(0xFF929292));
+      expect(GlassColors.surfaceHigh, const Color(0xFF171717));
+      expect(GlassColors.textPrimary, const Color(0xFFF4F4F4));
+      expect(GlassColors.textSecondary, const Color(0xFF969696));
       expect(GlassColors.silverAccent, const Color(0xFFE2E8F0));
     });
   });

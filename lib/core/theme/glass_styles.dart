@@ -7,12 +7,13 @@ import 'package:flutter/material.dart';
 class GlassColors {
   GlassColors._();
 
-  // Background tones — True AMOLED Black
+  // Background tones — True AMOLED Black (#000000) and Raised Surfaces (#090909, #101010, #171717)
   static const Color background = Color(0xFF000000);
   static const Color surfaceDark = Color(0xFF090909);
   static const Color surfaceElevated = Color(0xFF101010);
   static const Color surfaceMid = Color(0xFF101010);
-  static const Color cardFill = Color(0xFF141414);
+  static const Color surfaceHigh = Color(0xFF171717);
+  static const Color cardFill = Color(0xFF171717);
   static const Color surfaceOverlay = Color(0x12FFFFFF);
 
   // Graphite Grey Keypad surfaces
@@ -47,7 +48,7 @@ class GlassColors {
   static const Color softViolet = Color(0xFF94A3B8);
   static const Color deepViolet = Color(0xFF64748B);
 
-  // Call action colors — Refined monochrome graphite & cool silver
+  // Call action colors — Refined monochrome graphite & restrained accents
   static const Color callButtonBg = Color(0xFF1E1E1E);
   static const Color callButtonPressed = Color(0xFF303030);
   static const Color mintPrimary = Color(0xFFE2E8F0);
@@ -55,9 +56,15 @@ class GlassColors {
   static const Color mintDark = Color(0xFF262626);
   static const Color mintGlow = Color(0x26FFFFFF); // Soft cool silver glow
 
-  // Text colors — Soft white and muted greys
-  static const Color textPrimary = Color(0xFFF5F5F5); // Soft white
-  static const Color textSecondary = Color(0xFF929292); // Muted grey
+  // Call answer & decline refined tones
+  static const Color callAnswerBg = Color(0xFF1B2E24);
+  static const Color callAnswerBorder = Color(0x5534D399);
+  static const Color callDeclineBg = Color(0xFF331A1A);
+  static const Color callDeclineBorder = Color(0x55F87171);
+
+  // Text colors — Soft white (#F4F4F4) and muted greys (#969696)
+  static const Color textPrimary = Color(0xFFF4F4F4); // Soft white
+  static const Color textSecondary = Color(0xFF969696); // Muted grey
   static const Color textMuted = Color(0xFF5A5A5A); // Deep muted grey
 
   // Destructive / clear
